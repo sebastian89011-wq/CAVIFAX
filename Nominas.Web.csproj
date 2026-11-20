@@ -14,6 +14,8 @@
 		<Compile Remove="Nominas.Datos/**/*.cs" />
 		<Compile Remove="Nominas.Entidades/**/*.cs" />
 		<Compile Remove="Nominas.Negocios/**/*.cs" />
+		<Content Remove="Nominas.Datos/**;Nominas.Entidades/**;Nominas.Negocios/**" />
+		<None Remove="Nominas.Datos/**;Nominas.Entidades/**;Nominas.Negocios/**" />
 	</ItemGroup>
 
 </Project>
