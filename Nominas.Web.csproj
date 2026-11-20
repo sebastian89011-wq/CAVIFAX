@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="Nominas.Negocios\Nominas.Negocios.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Remove="Nominas.Datos/**/*.cs" />
+		<Compile Remove="Nominas.Entidades/**/*.cs" />
+		<Compile Remove="Nominas.Negocios/**/*.cs" />
+	</ItemGroup>
+
+</Project>
+
