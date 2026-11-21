@@ -1,4 +1,10 @@
+using Microsoft.EntityFrameworkCore;
+using Nominas.Datos;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContext<NominasDbContext>(options =>
+    options.UseMySQL(builder.Configuration.GetConnectionString("Nominas")!));
 
 // Add services to the container.
 builder.Services.AddRazorPages();
@@ -22,5 +28,8 @@ app.UseAuthorization();
 app.MapStaticAssets();
 app.MapRazorPages()
    .WithStaticAssets();
+
+// TEMPORAL: borrar después de la prueba
+app.MapGet("/prueba-bd", (NominasDbContext db) => db.Puestos.ToList());
 
 app.Run();
