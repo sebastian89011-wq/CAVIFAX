@@ -7,7 +7,7 @@ public class Obra
     /// <summary>FK a Cliente.</summary>
     public int IdCliente { get; set; }
     /// <summary>FK a Empleado: ingeniero responsable.</summary>
-    public int IdIngeniero { get; set; }
+    public int IdResponsable { get; set; }
     /// <summary>FK a Empleado: supervisor de la obra.</summary>
     public int IdSupervisor { get; set; }
     public string Nombre { get; set; } = string.Empty;
