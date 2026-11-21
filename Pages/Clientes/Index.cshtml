@@ -1,0 +1,21 @@
+﻿@page
+@model Nominas.Web.Pages.Clientes.IndexModel
+@{
+    ViewData["Title"] = "Clientes";
+}
+
+<h1>Clientes</h1>
+<a asp-page="Crear" class="btn btn-primary mb-3">+ Nuevo cliente</a>
+<table class="table table-striped">
+    <thead><tr><th>Nombre</th><th>Domicilio</th><th></th></tr></thead>
+    <tbody>
+        @foreach (var c in Model.Clientes)
+        {
+            <tr>
+                <td>@c.Nombre</td>
+                <td>@c.Domicilio</td>
+                <td><a asp-page="Editar" asp-route-id="@c.IdCliente" class="btn btn-sm btn-outline-primary">Editar</a></td>
+            </tr>
+        }
+    </tbody>
+</table>

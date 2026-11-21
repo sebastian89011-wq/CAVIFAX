@@ -1,0 +1,21 @@
+﻿@page
+@model Nominas.Web.Pages.Puestos.IndexModel
+@{
+    ViewData["Title"] = "Puestos";
+}
+
+<h1>Puestos</h1>
+<a asp-page="Crear" class="btn btn-primary mb-3">+ Nuevo puesto</a>
+<table class="table table-striped">
+    <thead><tr><th>Nombre</th><th>Descripción</th><th></th></tr></thead>
+    <tbody>
+        @foreach (var p in Model.Puestos)
+        {
+            <tr>
+                <td>@p.Nombre</td>
+                <td>@p.Descripcion</td>
+                <td><a asp-page="Editar" asp-route-id="@p.IdPuesto" class="btn btn-sm btn-outline-primary">Editar</a></td>
+            </tr>
+        }
+    </tbody>
+</table>
