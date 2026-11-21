@@ -1,0 +1,50 @@
+﻿@page
+@model Nominas.Web.Pages.Empleados.IndexModel
+@using Nominas.Entidades
+@{
+    ViewData["Title"] = "Empleados";
+}
+
+<h1>Empleados</h1>
+<a asp-page="Crear" class="btn btn-primary mb-3">+ Nuevo empleado</a>
+
+<table class="table table-striped align-middle">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Puesto</th>
+            <th>Especialidad</th>
+            <th>Contratación</th>
+            <th>Estatus</th>
+            <th class="text-end">Sueldo diario</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var e in Model.Empleados)
+        {
+            <tr>
+                <td>@e.Nombre @e.ApellidoPaterno @e.ApellidoMaterno</td>
+                <td>@Model.NombrePuesto(e.IdPuesto)</td>
+                <td>@e.Especialidad</td>
+                <td>@e.TipoContratacion</td>
+                <td>
+                    @if (e.Estatus == EstatusEmpleado.Activo)
+                    {
+                        <span class="badge bg-success">Activo</span>
+                    }
+                    else if (e.Estatus == EstatusEmpleado.BajaTemporal)
+                    {
+                        <span class="badge bg-warning text-dark">Baja temporal</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Baja definitiva</span>
+                    }
+                </td>
+                <td class="text-end">@e.SueldoDiario.ToString("C")</td>
+                <td><a asp-page="Editar" asp-route-id="@e.IdEmpleado" class="btn btn-sm btn-outline-primary">Editar</a></td>
+            </tr>
+        }
+    </tbody>
+</table>
