@@ -29,7 +29,4 @@ app.MapStaticAssets();
 app.MapRazorPages()
    .WithStaticAssets();
 
-// TEMPORAL: borrar después de la prueba
-app.MapGet("/prueba-bd", (NominasDbContext db) => db.Puestos.ToList());
-
 app.Run();
