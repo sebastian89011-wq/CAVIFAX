@@ -1,4 +1,10 @@
+using Microsoft.EntityFrameworkCore;
+using Nominas.Datos;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContext<NominasDbContext>(options =>
+    options.UseMySQL(builder.Configuration.GetConnectionString("Nominas")!));
 
 // Add services to the container.
 builder.Services.AddRazorPages();

@@ -1,5 +1,4 @@
-﻿
 namespace Nominas.Entidades;
 
-
-public enum EstatusEmpleado { Activo, BajaTemporal, Bajadefinitiva}
+/// <summary>Estado laboral de un empleado.</summary>
+public enum EstatusEmpleado { Activo, BajaTemporal, BajaDefinitiva }
