@@ -1,0 +1,76 @@
+﻿@page
+@model Nominas.Web.Pages.Obras.CrearModel
+@{
+    ViewData["Title"] = "Nueva obra";
+}
+
+<h1>Nueva obra</h1>
+
+<form method="post">
+    <h5 class="mt-4">Datos generales</h5>
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label asp-for="Obra.Nombre" class="form-label">Nombre de la obra</label>
+            <input asp-for="Obra.Nombre" class="form-control" maxlength="100" required />
+        </div>
+        <div class="col-md-6 mb-3">
+            <label asp-for="Obra.IdCliente" class="form-label">Cliente</label>
+            <select asp-for="Obra.IdCliente" asp-items="Model.Clientes" class="form-select" required>
+                <option value="">Selecciona...</option>
+            </select>
+        </div>
+        <div class="col-12 mb-3">
+            <label asp-for="Obra.Ubicacion" class="form-label">Ubicación</label>
+            <input asp-for="Obra.Ubicacion" class="form-control" maxlength="200" required />
+        </div>
+    </div>
+
+    <h5 class="mt-2">Responsables</h5>
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label asp-for="Obra.IdResponsable" class="form-label">Ingeniero responsable</label>
+            <select asp-for="Obra.IdResponsable" asp-items="Model.Responsables" class="form-select" required>
+                <option value="">Selecciona...</option>
+            </select>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label asp-for="Obra.IdSupervisor" class="form-label">Supervisor</label>
+            <select asp-for="Obra.IdSupervisor" asp-items="Model.Supervisores" class="form-select" required>
+                <option value="">Selecciona...</option>
+            </select>
+        </div>
+    </div>
+
+    <h5 class="mt-2">Fechas</h5>
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label asp-for="Obra.FechaInicio" class="form-label">Fecha de inicio</label>
+            <input asp-for="Obra.FechaInicio" type="date" class="form-control" required />
+        </div>
+        <div class="col-md-6 mb-3">
+            <label asp-for="Obra.FechaFinProgramada" class="form-label">Fecha de fin programada</label>
+            <input asp-for="Obra.FechaFinProgramada" type="date" class="form-control" required />
+            <div class="form-text">No puede ser anterior a la fecha de inicio.</div>
+        </div>
+    </div>
+
+    <h5 class="mt-2">Presupuesto de mano de obra</h5>
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label asp-for="Obra.PresupuestoManoObra" class="form-label">Presupuesto ($)</label>
+            <input asp-for="Obra.PresupuestoManoObra" type="number" step="0.01" min="0.01" class="form-control" required />
+        </div>
+        <div class="col-md-4 mb-3">
+            <label asp-for="Obra.LimiteAlertaSaldo" class="form-label">Avisar cuando el saldo baje de ($)</label>
+            <input asp-for="Obra.LimiteAlertaSaldo" type="number" step="0.01" min="0" class="form-control" required />
+        </div>
+        <div class="col-md-4 mb-3">
+            <label asp-for="Obra.BonoTerminacionPorTrabajador" class="form-label">Bono por trabajador al terminar ($)</label>
+            <input asp-for="Obra.BonoTerminacionPorTrabajador" type="number" step="0.01" min="0" class="form-control" required />
+            <div class="form-text">Solo se paga si la obra termina a tiempo.</div>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <a asp-page="Index" class="btn btn-secondary">Cancelar</a>
+</form>

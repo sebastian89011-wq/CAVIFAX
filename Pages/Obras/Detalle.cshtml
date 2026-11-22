@@ -1,0 +1,138 @@
+﻿@page "{id:int}"
+@model Nominas.Web.Pages.Obras.DetalleModel
+@{
+    var o = Model.Obra;
+    ViewData["Title"] = o.Nombre;
+    var claseEstatus = o.Estatus switch
+    {
+        EstatusObra.Activa => "bg-success",
+        EstatusObra.Suspendida => "bg-warning text-dark",
+        _ => "bg-secondary"
+    };
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h1 class="mb-0">@o.Nombre</h1>
+        <span class="badge @claseEstatus">@o.Estatus</span>
+    </div>
+    <div>
+        <a asp-page="Editar" asp-route-id="@o.IdObra" class="btn btn-primary">Editar</a>
+        <a asp-page="Index" class="btn btn-secondary">Volver</a>
+    </div>
+</div>
+
+@if (Model.Alerta)
+{
+    <div class="alert alert-danger">
+        <strong>Saldo bajo.</strong> Quedan @Model.Saldo.ToString("C") de presupuesto,
+        por debajo del límite de @o.LimiteAlertaSaldo.ToString("C").
+    </div>
+}
+
+@* Tres tarjetas con los números principales del presupuesto *@
+<div class="row text-center mb-3">
+    <div class="col-md-4 mb-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="text-muted">Presupuesto de mano de obra</div>
+                <div class="fs-3 fw-bold">@o.PresupuestoManoObra.ToString("C")</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="text-muted">Gastado</div>
+                <div class="fs-3 fw-bold">@Model.Gastado.ToString("C")</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card h-100 @(Model.Alerta ? "border-danger" : "")">
+            <div class="card-body">
+                <div class="text-muted">Saldo disponible</div>
+                <div class="fs-3 fw-bold @(Model.Alerta ? "text-danger" : "text-success")">@Model.Saldo.ToString("C")</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="progress mb-4" style="height: 24px">
+    <div class="progress-bar @(Model.Alerta ? "bg-danger" : "")" style="width: @Model.Porcentaje%">
+        @Model.Porcentaje% usado
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <div class="card h-100">
+            <div class="card-header fw-bold">Datos de la obra</div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-5">Cliente</dt>
+                    <dd class="col-sm-7">@DatosPrueba.NombreCliente(o.IdCliente)</dd>
+                    <dt class="col-sm-5">Ubicación</dt>
+                    <dd class="col-sm-7">@o.Ubicacion</dd>
+                    <dt class="col-sm-5">Responsable</dt>
+                    <dd class="col-sm-7">@DatosPrueba.NombreEmpleado(o.IdResponsable)</dd>
+                    <dt class="col-sm-5">Supervisor</dt>
+                    <dd class="col-sm-7">@DatosPrueba.NombreEmpleado(o.IdSupervisor)</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-3">
+        <div class="card h-100">
+            <div class="card-header fw-bold">Fechas y bono</div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-6">Inicio</dt>
+                    <dd class="col-sm-6">@o.FechaInicio.ToString("dd/MM/yyyy")</dd>
+                    <dt class="col-sm-6">Fin programado</dt>
+                    <dd class="col-sm-6">@o.FechaFinProgramada.ToString("dd/MM/yyyy")</dd>
+                    <dt class="col-sm-6">Fin real</dt>
+                    <dd class="col-sm-6">@(o.FechaFinReal?.ToString("dd/MM/yyyy") ?? "En curso")</dd>
+                    <dt class="col-sm-6">Bono por trabajador</dt>
+                    <dd class="col-sm-6">@o.BonoTerminacionPorTrabajador.ToString("C")</dd>
+                    <dt class="col-sm-6">Límite de alerta</dt>
+                    <dd class="col-sm-6">@o.LimiteAlertaSaldo.ToString("C")</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header fw-bold">Costo de mano de obra por semana</div>
+    <div class="card-body p-0">
+        @if (Model.CostosPorNomina.Count == 0)
+        {
+            <p class="text-muted m-3">Esta obra todavía no aparece en ninguna nómina.</p>
+        }
+        else
+        {
+            <table class="table table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>Semana</th><th>Nómina</th><th class="text-end">Trabajadores</th>
+                        <th class="text-end">Días-hombre</th><th class="text-end">Costo bruto</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var c in Model.CostosPorNomina)
+                    {
+                        <tr>
+                            <td><a asp-page="/NominaSemanal/Detalle" asp-route-id="@c.Nomina.IdNomina">@DatosPrueba.Semana(c.Nomina)</a></td>
+                            <td>@c.Nomina.Estatus</td>
+                            <td class="text-end">@c.Trabajadores</td>
+                            <td class="text-end">@c.Dias</td>
+                            <td class="text-end">@c.Total.ToString("C")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+<p class="text-muted small">Solo las nóminas autorizadas o pagadas se restan del presupuesto; el borrador es una vista previa.</p>

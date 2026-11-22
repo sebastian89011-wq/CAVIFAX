@@ -24,7 +24,7 @@
         @foreach (var e in Model.Empleados)
         {
             <tr>
-                <td>@e.Nombre @e.ApellidoPaterno @e.ApellidoMaterno</td>
+                <td><a asp-page="Detalle" asp-route-id="@e.IdEmpleado">@e.Nombre @e.ApellidoPaterno @e.ApellidoMaterno</a></td>
                 <td>@Model.NombrePuesto(e.IdPuesto)</td>
                 <td>@e.Especialidad</td>
                 <td>@e.TipoContratacion</td>

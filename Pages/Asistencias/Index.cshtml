@@ -1,0 +1,77 @@
+@page
+@model Nominas.Web.Pages.Asistencias.IndexModel
+@{
+    ViewData["Title"] = "Asistencias";
+    string[] nombresDias = { "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb" };
+    var sabado = Model.Lunes.AddDays(5);
+}
+
+<h1>Asistencias</h1>
+
+@* Navegación entre semanas: es un formulario GET, solo cambia la dirección *@
+<div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+    <a asp-page="Index" asp-route-Semana="@Model.Lunes.AddDays(-7).ToString("yyyy-MM-dd")" class="btn btn-outline-secondary">&laquo; Anterior</a>
+    <form method="get" class="d-flex gap-2">
+        <input type="date" name="Semana" value="@Model.Lunes.ToString("yyyy-MM-dd")" class="form-control" />
+        <button type="submit" class="btn btn-outline-primary">Ir</button>
+    </form>
+    <a asp-page="Index" asp-route-Semana="@Model.Lunes.AddDays(7).ToString("yyyy-MM-dd")" class="btn btn-outline-secondary">Siguiente &raquo;</a>
+    <span class="ms-md-3 fw-bold">Semana del @Model.Lunes.ToString("dd/MM") al @sabado.ToString("dd/MM/yyyy")</span>
+</div>
+
+<p class="text-muted">
+    Para cada día elige la obra donde trabajó el empleado, o <strong>Falta</strong>.
+    Las horas extra solo cuentan si asistió.
+</p>
+
+<form method="post">
+    <input type="hidden" name="Semana" value="@Model.Lunes.ToString("yyyy-MM-dd")" />
+
+    <div class="table-responsive">
+        <table class="table table-bordered align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th style="min-width: 160px">Empleado</th>
+                    @for (int d = 0; d < Model.Dias.Count; d++)
+                    {
+                        <th class="text-center" style="min-width: 150px">
+                            @nombresDias[d] <span class="text-muted fw-normal">@Model.Dias[d].ToString("dd/MM")</span>
+                        </th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @{ int i = 0; } @* Posición en la lista Registros *@
+                @foreach (var empleado in Model.EmpleadosActivos)
+                {
+                    <tr>
+                        <td>
+                            <div class="fw-bold">@empleado.Nombre @empleado.ApellidoPaterno</div>
+                            <small class="text-muted">@(empleado.Especialidad ?? "")</small>
+                        </td>
+                        @for (int d = 0; d < Model.Dias.Count; d++)
+                        {
+                            <td>
+                                @* Campos ocultos para saber de quién y de qué día es esta celda *@
+                                <input type="hidden" asp-for="Registros[i].IdAsistencia" />
+                                <input type="hidden" asp-for="Registros[i].IdEmpleado" />
+                                <input type="hidden" asp-for="Registros[i].Fecha" />
+
+                                <select asp-for="Registros[i].IdObra" asp-items="Model.ObrasActivas" class="form-select form-select-sm mb-1">
+                                    <option value="">Falta</option>
+                                </select>
+                                <div class="input-group input-group-sm">
+                                    <input asp-for="Registros[i].HorasExtra" type="number" min="0" max="12" step="0.5" class="form-control" />
+                                    <span class="input-group-text">h extra</span>
+                                </div>
+                            </td>
+                            i++;
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar asistencias</button>
+</form>

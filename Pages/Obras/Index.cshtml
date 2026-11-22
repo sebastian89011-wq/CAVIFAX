@@ -1,0 +1,58 @@
+﻿@page
+@model Nominas.Web.Pages.Obras.IndexModel
+@using Nominas.Entidades
+@{
+    ViewData["Title"] = "Obras";
+}
+
+<h1>Obras</h1>
+<a asp-page="Crear" class="btn btn-primary mb-3">+ Nueva obra</a>
+
+<table class="table table-striped align-middle">
+    <thead>
+        <tr>
+            <th>Obra</th>
+            <th>Cliente</th>
+            <th>Estatus</th>
+            <th class="text-end">Presupuesto</th>
+            <th>Avance del gasto</th>
+            <th class="text-end">Saldo</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var o in Model.Obras)
+        {
+            var gastado = Model.Gastado(o.IdObra);
+            var saldo = o.PresupuestoManoObra - gastado;
+            var porcentaje = o.PresupuestoManoObra > 0 ? (int)(gastado * 100 / o.PresupuestoManoObra) : 0;
+            var alerta = saldo <= o.LimiteAlertaSaldo;
+            var claseEstatus = o.Estatus switch
+            {
+                EstatusObra.Activa => "bg-success",
+                EstatusObra.Suspendida => "bg-warning text-dark",
+                _ => "bg-secondary"
+            };
+
+            <tr>
+                <td><a asp-page="Detalle" asp-route-id="@o.IdObra">@o.Nombre</a></td>
+                <td>@Model.NombreCliente(o.IdCliente)</td>
+                <td><span class="badge @claseEstatus">@o.Estatus</span></td>
+                <td class="text-end">@o.PresupuestoManoObra.ToString("C")</td>
+                <td style="min-width: 160px">
+                    <div class="progress">
+                        <div class="progress-bar @(alerta ? "bg-danger" : "")" style="width: @porcentaje%">@porcentaje%</div>
+                    </div>
+                </td>
+                <td class="text-end">
+                    @saldo.ToString("C")
+                    @if (alerta)
+                    {
+                        <br /><span class="badge bg-danger">Saldo bajo</span>
+                    }
+                </td>
+                <td><a asp-page="Editar" asp-route-id="@o.IdObra" class="btn btn-sm btn-outline-primary">Editar</a></td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,176 @@
+@page "{id:int}"
+@model Nominas.Web.Pages.NominaSemanal.DetalleModel
+@{
+    var n = Model.Nomina;
+    ViewData["Title"] = "Nómina " + DatosPrueba.Semana(n);
+    var esBorrador = n.Estatus == EstatusNomina.Borrador;
+    var claseEstatus = n.Estatus switch
+    {
+        EstatusNomina.Borrador => "bg-warning text-dark",
+        EstatusNomina.Autorizada => "bg-primary",
+        _ => "bg-success"
+    };
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h1 class="mb-0">Nómina del @DatosPrueba.Semana(n)</h1>
+        <span class="badge @claseEstatus">@n.Estatus</span>
+        @if (n.FechaAutorizacion != null)
+        {
+            <span class="text-muted ms-2">Autorizada el @n.FechaAutorizacion.Value.ToString("dd/MM/yyyy HH:mm")</span>
+        }
+    </div>
+    <a asp-page="Index" class="btn btn-secondary">Volver</a>
+</div>
+
+@if (esBorrador)
+{
+    <div class="alert alert-warning">
+        <strong>Borrador.</strong> Revisa los montos. Al autorizar, la nómina ya no se puede modificar (RN-09).
+    </div>
+}
+
+@* Resumen *@
+<div class="row text-center mb-3">
+    <div class="col-md-3 mb-3"><div class="card h-100"><div class="card-body">
+        <div class="text-muted">Total bruto</div><div class="fs-4 fw-bold">@Model.TotalBruto.ToString("C")</div>
+    </div></div></div>
+    <div class="col-md-3 mb-3"><div class="card h-100"><div class="card-body">
+        <div class="text-muted">Descuentos de préstamos</div><div class="fs-4 fw-bold text-danger">−@Model.TotalDescuentos.ToString("C")</div>
+    </div></div></div>
+    <div class="col-md-3 mb-3"><div class="card h-100"><div class="card-body">
+        <div class="text-muted">Total neto a pagar</div><div class="fs-4 fw-bold">@Model.TotalNeto.ToString("C")</div>
+    </div></div></div>
+    <div class="col-md-3 mb-3"><div class="card h-100"><div class="card-body">
+        <div class="text-muted">Pendiente de semanas anteriores</div><div class="fs-4 fw-bold">@Model.TotalPendientesAnteriores.ToString("C")</div>
+    </div></div></div>
+</div>
+
+@* Costo bruto agrupado por obra (lo que se resta del presupuesto de cada una) *@
+<h4 class="mt-2">Costo por obra</h4>
+@foreach (var grupo in Model.Detalles.GroupBy(d => d.IdObra))
+{
+    <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between">
+            <a asp-page="/Obras/Detalle" asp-route-id="@grupo.Key" class="fw-bold">@DatosPrueba.NombreObra(grupo.Key)</a>
+            <span>Subtotal: <strong>@grupo.Sum(d => d.CostoBruto).ToString("C")</strong></span>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-sm table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>Empleado</th><th class="text-end">Días</th><th class="text-end">Sueldo diario</th>
+                        <th class="text-end">Horas extra</th><th class="text-end">Pago por hora</th>
+                        <th class="text-end">Bono</th><th class="text-end">Costo bruto</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var d in grupo)
+                    {
+                        <tr>
+                            <td>@DatosPrueba.NombreEmpleado(d.IdEmpleado)</td>
+                            <td class="text-end">@d.DiasTrabajados</td>
+                            <td class="text-end">@d.SueldoDiarioAplicado.ToString("C")</td>
+                            <td class="text-end">@d.HorasExtra</td>
+                            <td class="text-end">@d.PagoHoraExtraAplicado.ToString("C")</td>
+                            <td class="text-end">@d.Bono.ToString("C")</td>
+                            <td class="text-end fw-bold">@d.CostoBruto.ToString("C")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+@* Lo que se le entrega a cada trabajador *@
+<h4 class="mt-4">Pago por empleado</h4>
+<table class="table table-striped align-middle">
+    <thead>
+        <tr>
+            <th>Empleado</th><th class="text-end">Bruto</th><th class="text-end">Descuento</th>
+            <th class="text-end">Neto</th><th>Estatus</th><th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var p in Model.Pagos)
+        {
+            <tr>
+                <td>@DatosPrueba.NombreEmpleado(p.IdEmpleado)</td>
+                <td class="text-end">@p.TotalBruto.ToString("C")</td>
+                <td class="text-end">@(p.TotalDescuentos > 0 ? "−" + p.TotalDescuentos.ToString("C") : "—")</td>
+                <td class="text-end fw-bold">@p.TotalNeto.ToString("C")</td>
+                <td>
+                    @if (esBorrador)
+                    {
+                        <span class="text-muted">Vista previa</span>
+                    }
+                    else if (p.Estatus == EstatusPago.Entregado)
+                    {
+                        <span class="badge bg-success">Entregado @p.FechaPago?.ToString("dd/MM")</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Pendiente</span>
+                    }
+                </td>
+                <td class="text-end">
+                    @if (!esBorrador && p.Estatus == EstatusPago.Pendiente)
+                    {
+                        <form method="post" asp-page-handler="Entregar" asp-route-id="@n.IdNomina" asp-route-idPago="@p.IdPagoEmpleado">
+                            <button type="submit" class="btn btn-sm btn-outline-success">Marcar entregado</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (Model.PendientesAnteriores.Count > 0)
+{
+    <h4 class="mt-4">Pagos pendientes de semanas anteriores</h4>
+    <p class="text-muted">Se suman al efectivo de esta semana hasta que se entreguen (RN-13).</p>
+    <table class="table table-striped align-middle">
+        <thead><tr><th>Empleado</th><th>Semana</th><th class="text-end">Neto</th><th></th></tr></thead>
+        <tbody>
+            @foreach (var p in Model.PendientesAnteriores)
+            {
+                <tr>
+                    <td>@DatosPrueba.NombreEmpleado(p.IdEmpleado)</td>
+                    <td><a asp-page="Detalle" asp-route-id="@p.IdNomina">@Model.SemanaDeNomina(p.IdNomina)</a></td>
+                    <td class="text-end fw-bold">@p.TotalNeto.ToString("C")</td>
+                    <td class="text-end">
+                        <form method="post" asp-page-handler="Entregar" asp-route-id="@n.IdNomina" asp-route-idPago="@p.IdPagoEmpleado">
+                            <button type="submit" class="btn btn-sm btn-outline-success">Marcar entregado</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@if (esBorrador)
+{
+    <div class="card border-primary mt-4">
+        <div class="card-body">
+            <form method="post" asp-page-handler="Autorizar" asp-route-id="@n.IdNomina" class="row g-2 align-items-end">
+                <div class="col-auto">
+                    <label asp-for="EfectivoRecibido" class="form-label">Efectivo recibido del cliente ($)</label>
+                    <input asp-for="EfectivoRecibido" type="number" step="0.01" min="0" class="form-control" required />
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary"
+                            onclick="return confirm('¿Autorizar la nómina? Ya no se podrá modificar.')">
+                        Autorizar nómina
+                    </button>
+                </div>
+                <div class="col-12 form-text">
+                    Sugerido: total neto de esta semana más lo pendiente de semanas anteriores.
+                </div>
+            </form>
+        </div>
+    </div>
+}
