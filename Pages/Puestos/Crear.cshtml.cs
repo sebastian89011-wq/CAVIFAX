@@ -1,12 +1,20 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Nominas.Entidades;
+using Nominas.Negocios;
+
 namespace Nominas.Web.Pages.Puestos
 {
     public class CrearModel : PageModel
     {
         [BindProperty]
         public Puesto Puesto { get; set; } = new();
+        private readonly PuestoService _puestoService;
+
+        public CrearModel(PuestoService puestoService)
+        {
+            this._puestoService = puestoService;
+        }
 
         public void OnGet()
         {
@@ -14,8 +22,18 @@ namespace Nominas.Web.Pages.Puestos
 
         public IActionResult OnPost()
         {
-            // Aquí el backend guardará el puesto en la base de datos
-            return RedirectToPage("Index");
+            try
+            {
+                _puestoService.Crear(Puesto);
+
+                return RedirectToPage("Index");
+            }
+            catch (ValidacionException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return Page();
+            }
+
         }
     }
 }
