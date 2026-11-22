@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Nominas.Entidades;
+using Nominas.Negocios;
 
 namespace Nominas.Web.Pages.Empleados
 {
@@ -11,6 +12,14 @@ namespace Nominas.Web.Pages.Empleados
         public Empleado Empleado { get; set; } = new();
 
         public List<SelectListItem> Puestos { get; set; } = new();
+        private readonly EmpleadoService _empleadoService;
+        private readonly PuestoService _puestoService;
+
+        public CrearModel(EmpleadoService empleadoService, PuestoService puestoService)
+        {
+            _empleadoService = empleadoService;
+            _puestoService = puestoService;
+        }
 
         public void OnGet()
         {
@@ -20,19 +29,24 @@ namespace Nominas.Web.Pages.Empleados
 
         public IActionResult OnPost()
         {
-            // Aquí el backend guardará el empleado (con estatus Activo) en la base de datos
-            return RedirectToPage("Index");
+            try
+            {
+                _empleadoService.Crear(Empleado);
+                return RedirectToPage("Index");
+            }
+            catch (ValidacionException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                CargarPuestos(); // la lista no viaja en el formulario: hay que volver a llenarla
+                return Page();
+            }
         }
 
         private void CargarPuestos()
         {
-            // Datos de prueba: el backend los cambiará por la consulta de puestos
-            Puestos = new List<SelectListItem>
-    {
-        new SelectListItem("Ingeniero", "1"),
-        new SelectListItem("Albañil", "2"),
-        new SelectListItem("Ayudante general", "3")
-    };
+            Puestos = _puestoService.Listar()
+                .Select(p => new SelectListItem(p.Nombre, p.IdPuesto.ToString()))
+                .ToList();
         }
     }
 }

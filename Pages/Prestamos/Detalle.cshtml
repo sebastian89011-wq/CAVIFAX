@@ -2,7 +2,7 @@
 @model Nominas.Web.Pages.Prestamos.DetalleModel
 @{
     var p = Model.Prestamo;
-    ViewData["Title"] = "Préstamo de " + DatosPrueba.NombreEmpleado(p.IdEmpleado);
+    ViewData["Title"] = "Préstamo de " + Model.NombreEmpleado;
     var pagado = p.Monto - p.SaldoPendiente;
     var porcentaje = p.Monto > 0 ? (int)(pagado * 100 / p.Monto) : 0;
     var semanasRestantes = p.AbonoSemanal > 0 ? (int)Math.Ceiling(p.SaldoPendiente / p.AbonoSemanal) : 0;
@@ -10,7 +10,7 @@
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <div>
-        <h1 class="mb-0">@p.Tipo de @DatosPrueba.NombreEmpleado(p.IdEmpleado)</h1>
+        <h1 class="mb-0">@p.Tipo de @Model.NombreEmpleado</h1>
         <span class="badge @(p.Estatus == EstatusPrestamo.Activo ? "bg-primary" : "bg-secondary")">@p.Estatus</span>
     </div>
     <a asp-page="Index" class="btn btn-secondary">Volver</a>

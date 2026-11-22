@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Nominas.Entidades;
+using Nominas.Negocios;
 
 namespace Nominas.Web.Pages.Clientes
 {
@@ -8,18 +9,16 @@ namespace Nominas.Web.Pages.Clientes
     {
         [BindProperty]
         public Cliente Cliente { get; set; } = new();
+        private readonly ClienteService _clienteService;
+
+        public EditarModel(ClienteService clienteService)
+        {
+            _clienteService = clienteService;
+        }
 
         public IActionResult OnGet(int id)
         {
-            // Datos de prueba: el backend los cambiará por la búsqueda en la base de datos
-            var clientes = new List<Cliente>
-        {
-            new Cliente { IdCliente = 1, Nombre = "Constructora del Valle", Domicilio = "Lomas de Valle, Duraznos 555" },
-            new Cliente { IdCliente = 2, Nombre = "Inmobiliaria Pacífico", Domicilio = "Lomas Turbas, Alisos 67" },
-            new Cliente { IdCliente = 3, Nombre = "Cliente3", Domicilio = "Vampiros y Rituales" }
-        };
-
-            var encontrado = clientes.FirstOrDefault(c => c.IdCliente == id);
+            var encontrado = _clienteService.ObtenerPorId(id);
             if (encontrado == null)
             {
                 return NotFound();
@@ -31,8 +30,16 @@ namespace Nominas.Web.Pages.Clientes
 
         public IActionResult OnPost()
         {
-            // Aquí el backend actualizará el cliente en la base de datos
-            return RedirectToPage("Index");
+            try
+            {
+                _clienteService.Editar(Cliente);
+                return RedirectToPage("Index");
+            }
+            catch (ValidacionException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return Page();
+            }
         }
     }
 }

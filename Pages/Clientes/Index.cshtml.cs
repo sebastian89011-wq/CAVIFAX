@@ -1,21 +1,23 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Nominas.Entidades;
+using Nominas.Negocios;
 
 namespace Nominas.Web.Pages.Clientes
 {
     public class IndexModel : PageModel
     {
         public List<Cliente> Clientes { get; set; } = new();
-        public void OnGet()
+        private readonly ClienteService _clienteService;
+
+        public IndexModel(ClienteService clienteService)
         {
-            Clientes = new List<Cliente>
-            {
-                new Cliente { IdCliente = 1, Nombre = "Constructora del Valle", Domicilio = "Lomas de Valle, Duraznos 555" },
-                new Cliente { IdCliente = 2, Nombre = "Inmobiliaria Pacífico", Domicilio = "Lomas Turbas, Alisos 67" },
-                new Cliente { IdCliente = 3, Nombre = "Cliente3", Domicilio = "Vampiros y Rituales" }
-            };
+            _clienteService = clienteService;
         }
 
+        public void OnGet()
+        {
+            Clientes = _clienteService.Listar();
+        }
     }
 }

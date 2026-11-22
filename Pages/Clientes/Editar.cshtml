@@ -7,6 +7,7 @@
 <h1>Editar cliente</h1>
 
 <form method="post" class="col-md-6">
+    <div asp-validation-summary="All" class="text-danger"></div>
     <input type="hidden" asp-for="Cliente.IdCliente" />
     <div class="mb-3">
         <label asp-for="Cliente.Nombre" class="form-label">Nombre</label>

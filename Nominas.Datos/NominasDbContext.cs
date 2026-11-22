@@ -11,6 +11,12 @@ public class NominasDbContext : DbContext
     {
     }
 
+    // Todas las propiedades DateOnly (y DateOnly?) se guardan y leen como DateTime en las columnas DATE
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        configurationBuilder.Properties<DateOnly>().HaveConversion<DateOnlyConverter>();
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

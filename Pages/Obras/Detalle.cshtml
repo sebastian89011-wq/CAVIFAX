@@ -71,13 +71,13 @@
             <div class="card-body">
                 <dl class="row mb-0">
                     <dt class="col-sm-5">Cliente</dt>
-                    <dd class="col-sm-7">@DatosPrueba.NombreCliente(o.IdCliente)</dd>
+                    <dd class="col-sm-7">@Model.NombreCliente</dd>
                     <dt class="col-sm-5">Ubicación</dt>
                     <dd class="col-sm-7">@o.Ubicacion</dd>
                     <dt class="col-sm-5">Responsable</dt>
-                    <dd class="col-sm-7">@DatosPrueba.NombreEmpleado(o.IdResponsable)</dd>
+                    <dd class="col-sm-7">@Model.NombreResponsable</dd>
                     <dt class="col-sm-5">Supervisor</dt>
-                    <dd class="col-sm-7">@DatosPrueba.NombreEmpleado(o.IdSupervisor)</dd>
+                    <dd class="col-sm-7">@Model.NombreSupervisor</dd>
                 </dl>
             </div>
         </div>
@@ -123,7 +123,7 @@
                     @foreach (var c in Model.CostosPorNomina)
                     {
                         <tr>
-                            <td><a asp-page="/NominaSemanal/Detalle" asp-route-id="@c.Nomina.IdNomina">@DatosPrueba.Semana(c.Nomina)</a></td>
+                            <td><a asp-page="/NominaSemanal/Detalle" asp-route-id="@c.Nomina.IdNomina">@Model.Semana(c.Nomina)</a></td>
                             <td>@c.Nomina.Estatus</td>
                             <td class="text-end">@c.Trabajadores</td>
                             <td class="text-end">@c.Dias</td>
