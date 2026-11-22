@@ -3,11 +3,11 @@ using Nominas.Entidades;
 
 namespace Nominas.Negocios;
 
-public class AsistenicaService()
+public class AsistenciaService
 {
 
     private readonly NominasDbContext _db;
-    public AsistenicaService(NominasDbContext db)
+    public AsistenciaService(NominasDbContext db)
     {
         _db = db;
     }

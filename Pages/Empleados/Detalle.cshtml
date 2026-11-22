@@ -63,7 +63,7 @@
                     <dt class="col-sm-3">Puesto</dt>
                     <dd class="col-sm-3">@Model.NombrePuesto</dd>
                     <dt class="col-sm-3">Especialidad</dt>
-                    <dd class="col-sm-3">@(e.Especialidad ?? "Ninguna")</dd>
+                    <dd class="col-sm-3">@(e.Especialidad?.ToString() ?? "Ninguna")</dd>
                     <dt class="col-sm-3">Contratación</dt>
                     <dd class="col-sm-3">@e.TipoContratacion</dd>
                     <dt class="col-sm-3">Estatus</dt>

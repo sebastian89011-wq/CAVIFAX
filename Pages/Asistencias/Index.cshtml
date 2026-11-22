@@ -47,7 +47,7 @@
                     <tr>
                         <td>
                             <div class="fw-bold">@empleado.Nombre @empleado.ApellidoPaterno</div>
-                            <small class="text-muted">@(empleado.Especialidad ?? "")</small>
+                            <small class="text-muted">@empleado.Especialidad</small>
                         </td>
                         @for (int d = 0; d < Model.Dias.Count; d++)
                         {
