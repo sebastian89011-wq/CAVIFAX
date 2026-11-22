@@ -25,6 +25,7 @@
 </p>
 
 <form method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
     <input type="hidden" name="Semana" value="@Model.Lunes.ToString("yyyy-MM-dd")" />
 
     <div class="table-responsive">
