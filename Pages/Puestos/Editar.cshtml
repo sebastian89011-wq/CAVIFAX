@@ -1,0 +1,24 @@
+﻿@page "{id:int}"
+@model Nominas.Web.Pages.Puestos.EditarModel
+@{
+    ViewData["Title"] = "Editar puesto";
+}
+
+<h1>Editar puesto</h1>
+
+<form method="post" class="col-md-6">
+    <input type="hidden" asp-for="Puesto.IdPuesto" />
+    <div class="mb-3">
+        <label asp-for="Puesto.Nombre" class="form-label">Nombre</label>
+        <input asp-for="Puesto.Nombre" class="form-control" maxlength="40" required />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Puesto.Descripcion" class="form-label">Descripción</label>
+        <textarea asp-for="Puesto.Descripcion" class="form-control" rows="3" maxlength="150"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <a asp-page="Index" class="btn btn-secondary">Cancelar</a>
+</form>
+

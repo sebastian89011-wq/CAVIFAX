@@ -1,0 +1,67 @@
+@page "{id:int}"
+@model Nominas.Web.Pages.Prestamos.DetalleModel
+@{
+    var p = Model.Prestamo;
+    ViewData["Title"] = "Préstamo de " + DatosPrueba.NombreEmpleado(p.IdEmpleado);
+    var pagado = p.Monto - p.SaldoPendiente;
+    var porcentaje = p.Monto > 0 ? (int)(pagado * 100 / p.Monto) : 0;
+    var semanasRestantes = p.AbonoSemanal > 0 ? (int)Math.Ceiling(p.SaldoPendiente / p.AbonoSemanal) : 0;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h1 class="mb-0">@p.Tipo de @DatosPrueba.NombreEmpleado(p.IdEmpleado)</h1>
+        <span class="badge @(p.Estatus == EstatusPrestamo.Activo ? "bg-primary" : "bg-secondary")">@p.Estatus</span>
+    </div>
+    <a asp-page="Index" class="btn btn-secondary">Volver</a>
+</div>
+
+<div class="row text-center mb-3">
+    <div class="col-md-3 mb-3"><div class="card h-100"><div class="card-body">
+        <div class="text-muted">Monto</div><div class="fs-4 fw-bold">@p.Monto.ToString("C")</div>
+    </div></div></div>
+    <div class="col-md-3 mb-3"><div class="card h-100"><div class="card-body">
+        <div class="text-muted">Pagado</div><div class="fs-4 fw-bold text-success">@pagado.ToString("C")</div>
+    </div></div></div>
+    <div class="col-md-3 mb-3"><div class="card h-100"><div class="card-body">
+        <div class="text-muted">Saldo pendiente</div><div class="fs-4 fw-bold">@p.SaldoPendiente.ToString("C")</div>
+    </div></div></div>
+    <div class="col-md-3 mb-3"><div class="card h-100"><div class="card-body">
+        <div class="text-muted">Semanas restantes</div><div class="fs-4 fw-bold">@semanasRestantes</div>
+    </div></div></div>
+</div>
+
+<div class="progress mb-4" style="height: 24px">
+    <div class="progress-bar bg-success" style="width: @porcentaje%">@porcentaje% pagado</div>
+</div>
+
+<p>
+    Entregado el <strong>@p.Fecha.ToString("dd/MM/yyyy")</strong>, con un abono semanal de
+    <strong>@p.AbonoSemanal.ToString("C")</strong>.
+</p>
+
+<div class="card">
+    <div class="card-header fw-bold">Abonos descontados en nómina</div>
+    <div class="card-body p-0">
+        @if (Model.Abonos.Count == 0)
+        {
+            <p class="text-muted m-3">Todavía no se ha descontado ningún abono.</p>
+        }
+        else
+        {
+            <table class="table table-striped mb-0">
+                <thead><tr><th>Fecha</th><th>Nómina (semana)</th><th class="text-end">Abono</th></tr></thead>
+                <tbody>
+                    @foreach (var a in Model.Abonos)
+                    {
+                        <tr>
+                            <td>@a.Fecha.ToString("dd/MM/yyyy")</td>
+                            <td><a asp-page="/NominaSemanal/Detalle" asp-route-id="@a.IdNomina">@Model.SemanaDeNomina(a.IdNomina)</a></td>
+                            <td class="text-end">@a.MontoAbonado.ToString("C")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>

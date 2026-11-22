@@ -1,0 +1,23 @@
+﻿@page
+@model Nominas.Web.Pages.Clientes.CrearModel
+@{
+    ViewData["Title"] = "Nuevo cliente";
+}
+
+<h1>Nuevo cliente</h1>
+
+<form method="post" class="col-md-6">
+    <div class="mb-3">
+        <label asp-for="Cliente.Nombre" class="form-label">Nombre</label>
+        <input asp-for="Cliente.Nombre" class="form-control" maxlength="100" required />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Cliente.Domicilio" class="form-label">Domicilio</label>
+        <input asp-for="Cliente.Domicilio" class="form-control" maxlength="200" required />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <a asp-page="Index" class="btn btn-secondary">Cancelar</a>
+</form>
+

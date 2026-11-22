@@ -1,0 +1,50 @@
+@page
+@model Nominas.Web.Pages.Prestamos.IndexModel
+@{
+    ViewData["Title"] = "Préstamos";
+}
+
+<h1>Préstamos y anticipos</h1>
+<a asp-page="Crear" class="btn btn-primary mb-3">+ Nuevo préstamo</a>
+
+<table class="table table-striped align-middle">
+    <thead>
+        <tr>
+            <th>Empleado</th><th>Tipo</th><th>Fecha</th>
+            <th class="text-end">Monto</th><th class="text-end">Abono semanal</th>
+            <th>Pagado</th><th class="text-end">Saldo pendiente</th><th>Estatus</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var p in Model.Prestamos)
+        {
+            var pagado = p.Monto - p.SaldoPendiente;
+            var porcentaje = p.Monto > 0 ? (int)(pagado * 100 / p.Monto) : 0;
+
+            <tr>
+                <td><a asp-page="Detalle" asp-route-id="@p.IdPrestamo">@DatosPrueba.NombreEmpleado(p.IdEmpleado)</a></td>
+                <td>@p.Tipo</td>
+                <td>@p.Fecha.ToString("dd/MM/yyyy")</td>
+                <td class="text-end">@p.Monto.ToString("C")</td>
+                <td class="text-end">@p.AbonoSemanal.ToString("C")</td>
+                <td style="min-width: 140px">
+                    <div class="progress">
+                        <div class="progress-bar bg-success" style="width: @porcentaje%">@porcentaje%</div>
+                    </div>
+                </td>
+                <td class="text-end">@p.SaldoPendiente.ToString("C")</td>
+                <td>
+                    @if (p.Estatus == EstatusPrestamo.Activo)
+                    {
+                        <span class="badge bg-primary">Activo</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Liquidado</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<p class="text-muted small">El abono se descuenta automáticamente en cada nómina autorizada hasta liquidar el saldo (RN-14).</p>

@@ -1,0 +1,81 @@
+﻿@page "{id:int}"
+@model Nominas.Web.Pages.Empleados.DetalleModel
+@{
+    var e = Model.Empleado;
+    ViewData["Title"] = e.Nombre + " " + e.ApellidoPaterno;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>@e.Nombre @e.ApellidoPaterno @e.ApellidoMaterno</h1>
+    <div>
+        <a asp-page="Editar" asp-route-id="@e.IdEmpleado" class="btn btn-primary">Editar</a>
+        <a asp-page="Index" class="btn btn-secondary">Volver</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <div class="card h-100">
+            <div class="card-header fw-bold">Datos personales</div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-5">Teléfono</dt>
+                    <dd class="col-sm-7">@e.Telefono</dd>
+                    <dt class="col-sm-5">Domicilio</dt>
+                    <dd class="col-sm-7">@e.Domicilio</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-3">
+        <div class="card h-100">
+            <div class="card-header fw-bold">Documentos</div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-5">CURP</dt>
+                    <dd class="col-sm-7">@e.Curp</dd>
+                    <dt class="col-sm-5">NSS</dt>
+                    <dd class="col-sm-7">@e.Nss</dd>
+                    <dt class="col-sm-5">Clave INE</dt>
+                    <dd class="col-sm-7">@e.ClaveIne</dd>
+                    <dt class="col-sm-5">Documentación</dt>
+                    <dd class="col-sm-7">
+                        @if (e.DocumentosCompletos)
+                        {
+                            <span class="badge bg-success">Completa</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Incompleta</span>
+                        }
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 mb-3">
+        <div class="card">
+            <div class="card-header fw-bold">Datos laborales</div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-3">Puesto</dt>
+                    <dd class="col-sm-3">@Model.NombrePuesto</dd>
+                    <dt class="col-sm-3">Especialidad</dt>
+                    <dd class="col-sm-3">@(e.Especialidad ?? "Ninguna")</dd>
+                    <dt class="col-sm-3">Contratación</dt>
+                    <dd class="col-sm-3">@e.TipoContratacion</dd>
+                    <dt class="col-sm-3">Estatus</dt>
+                    <dd class="col-sm-3">@e.Estatus</dd>
+                    <dt class="col-sm-3">Fecha de ingreso</dt>
+                    <dd class="col-sm-3">@e.FechaIngreso.ToString("dd/MM/yyyy")</dd>
+                    <dt class="col-sm-3">Sueldo diario</dt>
+                    <dd class="col-sm-3">@e.SueldoDiario.ToString("C")</dd>
+                    <dt class="col-sm-3">Pago por hora extra</dt>
+                    <dd class="col-sm-3">@e.PagoHoraExtra.ToString("C")</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>

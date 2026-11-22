@@ -1,0 +1,67 @@
+@page
+@model Nominas.Web.Pages.NominaSemanal.IndexModel
+@{
+    ViewData["Title"] = "Nómina";
+}
+
+<h1>Nómina semanal</h1>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="post" class="row g-2 align-items-end">
+            <div class="col-auto">
+                <label asp-for="SemanaAGenerar" class="form-label">Generar la nómina de la semana del día</label>
+                <input asp-for="SemanaAGenerar" type="date" class="form-control" required />
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary">Generar borrador</button>
+            </div>
+            <div class="col-12 form-text">
+                Se calcula con las asistencias capturadas. Si esa semana ya tiene nómina, se abre la existente.
+            </div>
+        </form>
+    </div>
+</div>
+
+<table class="table table-striped align-middle">
+    <thead>
+        <tr>
+            <th>Semana</th><th>Estatus</th><th>Autorizada</th>
+            <th class="text-end">Total a pagar</th><th class="text-end">Efectivo recibido</th><th>Pagos</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var n in Model.Nominas)
+        {
+            var claseEstatus = n.Estatus switch
+            {
+                EstatusNomina.Borrador => "bg-warning text-dark",
+                EstatusNomina.Autorizada => "bg-primary",
+                _ => "bg-success"
+            };
+            var pendientes = Model.PagosPendientes(n.IdNomina);
+
+            <tr>
+                <td><a asp-page="Detalle" asp-route-id="@n.IdNomina">@DatosPrueba.Semana(n)</a></td>
+                <td><span class="badge @claseEstatus">@n.Estatus</span></td>
+                <td>@(n.FechaAutorizacion?.ToString("dd/MM/yyyy HH:mm") ?? "—")</td>
+                <td class="text-end">@Model.TotalNeto(n.IdNomina).ToString("C")</td>
+                <td class="text-end">@(n.Estatus == EstatusNomina.Borrador ? "—" : n.EfectivoRecibido.ToString("C"))</td>
+                <td>
+                    @if (n.Estatus == EstatusNomina.Borrador)
+                    {
+                        <span class="text-muted">Sin autorizar</span>
+                    }
+                    else if (pendientes > 0)
+                    {
+                        <span class="badge bg-danger">@pendientes pendiente(s)</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-success">Todos entregados</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

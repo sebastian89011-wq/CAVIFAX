@@ -1,0 +1,100 @@
+﻿@page
+@model Nominas.Web.Pages.Empleados.CrearModel
+@using Nominas.Entidades
+@{
+    ViewData["Title"] = "Nuevo empleado";
+}
+
+<h1>Nuevo empleado</h1>
+
+<form method="post">
+    <h5 class="mt-4">Datos personales</h5>
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label asp-for="Empleado.Nombre" class="form-label">Nombre(s)</label>
+            <input asp-for="Empleado.Nombre" class="form-control" maxlength="50" required />
+        </div>
+        <div class="col-md-4 mb-3">
+            <label asp-for="Empleado.ApellidoPaterno" class="form-label">Apellido paterno</label>
+            <input asp-for="Empleado.ApellidoPaterno" class="form-control" maxlength="40" required />
+        </div>
+        <div class="col-md-4 mb-3">
+            <label asp-for="Empleado.ApellidoMaterno" class="form-label">Apellido materno</label>
+            <input asp-for="Empleado.ApellidoMaterno" class="form-control" maxlength="40" />
+        </div>
+        <div class="col-md-4 mb-3">
+            <label asp-for="Empleado.Telefono" class="form-label">Teléfono</label>
+            <input asp-for="Empleado.Telefono" class="form-control" maxlength="10" pattern="[0-9]{10}"
+                   title="10 dígitos" required />
+        </div>
+        <div class="col-md-8 mb-3">
+            <label asp-for="Empleado.Domicilio" class="form-label">Domicilio</label>
+            <input asp-for="Empleado.Domicilio" class="form-control" maxlength="200" required />
+        </div>
+    </div>
+
+    <h5 class="mt-2">Documentos</h5>
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label asp-for="Empleado.Curp" class="form-label">CURP</label>
+            <input asp-for="Empleado.Curp" class="form-control text-uppercase" maxlength="18"
+                   pattern="[A-Za-z0-9]{18}" title="18 caracteres" required />
+        </div>
+        <div class="col-md-4 mb-3">
+            <label asp-for="Empleado.Nss" class="form-label">NSS</label>
+            <input asp-for="Empleado.Nss" class="form-control" maxlength="11"
+                   pattern="[0-9]{11}" title="11 dígitos" required />
+        </div>
+        <div class="col-md-4 mb-3">
+            <label asp-for="Empleado.ClaveIne" class="form-label">Clave de elector (INE)</label>
+            <input asp-for="Empleado.ClaveIne" class="form-control text-uppercase" maxlength="18"
+                   pattern="[A-Za-z0-9]{18}" title="18 caracteres" required />
+        </div>
+        <div class="col-12 mb-3">
+            <div class="form-check">
+                <input asp-for="Empleado.DocumentosCompletos" class="form-check-input" />
+                <label asp-for="Empleado.DocumentosCompletos" class="form-check-label">
+                    Entregó INE, acta de nacimiento y comprobante de domicilio
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <h5 class="mt-2">Datos laborales</h5>
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label asp-for="Empleado.IdPuesto" class="form-label">Puesto</label>
+            <select asp-for="Empleado.IdPuesto" asp-items="Model.Puestos" class="form-select" required>
+                <option value="">Selecciona...</option>
+            </select>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label asp-for="Empleado.Especialidad" class="form-label">Especialidad</label>
+            <select asp-for="Empleado.Especialidad" class="form-select">
+                <option value="">Ninguna</option>
+                <option>Soldador</option>
+                <option>Electricista</option>
+            </select>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label asp-for="Empleado.TipoContratacion" class="form-label">Tipo de contratación</label>
+            <select asp-for="Empleado.TipoContratacion" asp-items="Html.GetEnumSelectList<TipoContratacion>()"
+                    class="form-select"></select>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label asp-for="Empleado.FechaIngreso" class="form-label">Fecha de ingreso</label>
+            <input asp-for="Empleado.FechaIngreso" type="date" class="form-control" required />
+        </div>
+        <div class="col-md-4 mb-3">
+            <label asp-for="Empleado.SueldoDiario" class="form-label">Sueldo diario ($)</label>
+            <input asp-for="Empleado.SueldoDiario" type="number" step="0.01" min="0.01" class="form-control" required />
+        </div>
+        <div class="col-md-4 mb-3">
+            <label asp-for="Empleado.PagoHoraExtra" class="form-label">Pago por hora extra ($)</label>
+            <input asp-for="Empleado.PagoHoraExtra" type="number" step="0.01" min="0.01" class="form-control" required />
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <a asp-page="Index" class="btn btn-secondary">Cancelar</a>
+</form>
