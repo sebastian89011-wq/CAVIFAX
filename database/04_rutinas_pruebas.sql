@@ -160,12 +160,18 @@ BEGIN
             SET v_id_prestamo = NULL;
             SET v_descuento_real = 0.00;
 
-            -- Buscar si el trabajador tiene préstamo activo (RN-14)
-            SELECT id_prestamo, abono_semanal, saldo_pendiente 
-            INTO v_id_prestamo, v_abono, v_saldo_prestamo
-            FROM PRESTAMO 
-            WHERE id_empleado = v_id_emp AND estatus = 'activo'
-            LIMIT 1 FOR UPDATE;
+            -- Buscar si el trabajador tiene préstamo activo (RN-14).
+            -- Va en su propio bloque: si no tiene préstamo, el NOT FOUND lo atiende este handler
+            -- y NO el del cursor (si no, v_fin = 1 y se saltaban los empleados restantes).
+            BEGIN
+                DECLARE CONTINUE HANDLER FOR NOT FOUND SET v_id_prestamo = NULL;
+
+                SELECT id_prestamo, abono_semanal, saldo_pendiente
+                INTO v_id_prestamo, v_abono, v_saldo_prestamo
+                FROM PRESTAMO
+                WHERE id_empleado = v_id_emp AND estatus = 'activo'
+                LIMIT 1 FOR UPDATE;
+            END;
 
             IF v_id_prestamo IS NOT NULL THEN
                 -- El descuento no puede superar el saldo del préstamo ni el total bruto (neto nunca negativo)
@@ -176,8 +182,10 @@ BEGIN
                     VALUES (v_id_prestamo, p_id_nomina, v_descuento_real, v_fecha_fin);
 
                     UPDATE PRESTAMO 
-                    SET saldo_pendiente = saldo_pendiente - v_descuento_real,
-                        estatus = IF(saldo_pendiente - v_descuento_real = 0, 'liquidado', 'activo')
+                    -- MySQL aplica el SET de izquierda a derecha: el estatus va primero,
+                    -- mientras saldo_pendiente todavía tiene el valor anterior.
+                    SET estatus = IF(saldo_pendiente - v_descuento_real = 0, 'liquidado', 'activo'),
+                        saldo_pendiente = saldo_pendiente - v_descuento_real
                     WHERE id_prestamo = v_id_prestamo;
                 END IF;
             END IF;

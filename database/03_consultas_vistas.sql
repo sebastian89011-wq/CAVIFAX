@@ -80,10 +80,11 @@ WHERE O.estatus = 'terminada'
 
 -- [C6 - AGREGACIÓN / GROUP BY / HAVING] Obras cuyo gasto acumulado supera el 1% de su presupuesto
 SELECT O.id_obra, O.nombre AS obra, O.presupuesto_mano_obra,
-       COALESCE(SUM(DN.costo_bruto), 0) AS gasto_autorizado,
-       (O.presupuesto_mano_obra - COALESCE(SUM(DN.costo_bruto), 0)) AS saldo_restante
+       COALESCE(SUM(CASE WHEN N.id_nomina IS NOT NULL THEN DN.costo_bruto END), 0) AS gasto_autorizado,
+       (O.presupuesto_mano_obra - COALESCE(SUM(CASE WHEN N.id_nomina IS NOT NULL THEN DN.costo_bruto END), 0)) AS saldo_restante
 FROM OBRA O
 LEFT JOIN DETALLE_NOMINA DN ON O.id_obra = DN.id_obra
+-- Solo se cuentan los detalles de nóminas autorizadas o pagadas; los borradores quedan con N = NULL
 LEFT JOIN NOMINA N ON DN.id_nomina = N.id_nomina AND N.estatus IN ('autorizada', 'pagada')
 GROUP BY O.id_obra, O.nombre, O.presupuesto_mano_obra
 HAVING gasto_autorizado > 0;
