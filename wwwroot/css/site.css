@@ -1,26 +1,194 @@
+/* =========================================================
+   Diseño CAVIFAX, basado en el logo de CAVI Edificaciones.
+   Se carga DESPUÉS de Bootstrap, por eso estas reglas le ganan.
+   ========================================================= */
+
+/* ---------- 1. Colores y fuente (variables) ---------- */
+:root {
+  /* Colores sacados del logo */
+  --cavi-azul: #010066;
+  --cavi-azul-oscuro: #00004d;
+  --cavi-gris-oscuro: #666666;
+  --cavi-gris: #999999;
+  --cavi-gris-claro: #e3e5ec;
+  --cavi-fondo: #f3f4f7;
+
+  /* Variables de Bootstrap: color principal, enlaces, fondo y fuente */
+  --bs-primary: #010066;
+  --bs-primary-rgb: 1, 0, 102;
+  --bs-link-color: #010066;
+  --bs-link-color-rgb: 1, 0, 102;
+  --bs-link-hover-color: #00004d;
+  --bs-link-hover-color-rgb: 0, 0, 77;
+  /* --bs-body-bg se queda en blanco: Bootstrap lo usa para inputs, tarjetas y tablas.
+     El gris de fondo se pone solo al body (abajo). */
+  --bs-body-bg: #fff;
+  --bs-body-font-family: "Montserrat", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
 html {
   font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
   position: relative;
   min-height: 100%;
 }
 
+@media (min-width: 768px) {
+  html {
+    font-size: 15px;
+  }
+}
+
 body {
+  background-color: var(--cavi-fondo);
   margin-bottom: 60px;
 }
 
+/* ---------- 2. Títulos ---------- */
+h1, h2, h3, h4, h5 {
+  color: var(--cavi-azul);
+  font-weight: 700;
+}
+
+/* Títulos de sección en mayúsculas y espaciados, como "EDIFICACIONES" en el logo */
+main h4,
+main form > h5 {
+  color: var(--cavi-gris-oscuro);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  border-bottom: 1px solid var(--cavi-gris);
+  padding-bottom: 0.4rem;
+}
+
+/* ---------- 3. Barra de navegación ---------- */
+.navbar {
+  border-bottom: 1px solid var(--cavi-gris);   /* la línea gris del logo */
+  box-shadow: 0 2px 8px rgba(1, 0, 102, 0.06);
+  --bs-navbar-color: var(--cavi-azul);
+  --bs-navbar-hover-color: var(--cavi-azul-oscuro);
+  --bs-navbar-active-color: var(--cavi-azul);
+}
+
+.logo-cavi {
+  height: 46px;
+}
+
+.navbar .nav-link {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-bottom: 3px solid transparent;
+}
+
+.navbar .nav-link:hover {
+  border-bottom-color: var(--cavi-gris);
+}
+
+/* Sección en la que está el usuario */
+.navbar .nav-link.active {
+  border-bottom-color: var(--cavi-azul);
+}
+
+/* ---------- 4. Botones ---------- */
+.btn-primary {
+  --bs-btn-bg: var(--cavi-azul);
+  --bs-btn-border-color: var(--cavi-azul);
+  --bs-btn-hover-bg: var(--cavi-azul-oscuro);
+  --bs-btn-hover-border-color: var(--cavi-azul-oscuro);
+  --bs-btn-active-bg: var(--cavi-azul-oscuro);
+  --bs-btn-active-border-color: var(--cavi-azul-oscuro);
+  --bs-btn-disabled-bg: var(--cavi-azul);
+  --bs-btn-disabled-border-color: var(--cavi-azul);
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--cavi-azul);
+  --bs-btn-border-color: var(--cavi-azul);
+  --bs-btn-hover-bg: var(--cavi-azul);
+  --bs-btn-hover-border-color: var(--cavi-azul);
+  --bs-btn-active-bg: var(--cavi-azul-oscuro);
+  --bs-btn-active-border-color: var(--cavi-azul-oscuro);
+}
+
+.btn-secondary {
+  --bs-btn-bg: var(--cavi-gris-oscuro);
+  --bs-btn-border-color: var(--cavi-gris-oscuro);
+  --bs-btn-hover-bg: #4d4d4d;
+  --bs-btn-hover-border-color: #4d4d4d;
+}
+
+/* Contorno de foco (al dar clic o tabular a un campo) en azul CAVI */
+.btn:focus, .btn:active:focus, .form-control:focus, .form-select:focus, .form-check-input:focus {
+  border-color: var(--cavi-azul);
+  box-shadow: 0 0 0 0.2rem rgba(1, 0, 102, 0.2);
+}
+
+.form-check-input:checked {
+  background-color: var(--cavi-azul);
+  border-color: var(--cavi-azul);
+}
+
+/* ---------- 5. Tarjetas ---------- */
+.card {
+  border: 1px solid var(--cavi-gris-claro);
+  box-shadow: 0 1px 4px rgba(1, 0, 102, 0.07);
+}
+
+.card-header {
+  background-color: #fff;
+  color: var(--cavi-azul);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-bottom: 2px solid var(--cavi-azul);
+}
+
+/* Tarjetas de resumen (números grandes): franja azul a la izquierda, como la "C" del isotipo */
+.row.text-center > [class*="col"] > .card {
+  border-left: 4px solid var(--cavi-azul);
+}
+
+/* Tarjetas que llevan a otra página: se levantan un poco al pasar el mouse */
+.card:has(.stretched-link) {
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.card:has(.stretched-link):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(1, 0, 102, 0.15);
+}
+
+/* ---------- 6. Tablas ---------- */
+.table {
+  --bs-table-bg: #fff;   /* fondo blanco sobre el gris de la página */
+}
+
+.table > thead > tr > th {
+  background-color: var(--cavi-azul);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-color: var(--cavi-azul);
+}
+
+/* ---------- 7. Barras de progreso ---------- */
+.progress-bar {
+  --bs-progress-bar-bg: var(--cavi-azul);
+}
+
+/* ---------- 8. Pie de página ---------- */
+.footer {
+  background-color: #fff;
+  border-top: 1px solid var(--cavi-gris);
+  color: var(--cavi-gris-oscuro);
+  font-size: 0.85rem;
+}
+
+/* ---------- Plantilla original de ASP.NET (no tocar) ---------- */
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
   color: var(--bs-secondary-color);
   text-align: end;
