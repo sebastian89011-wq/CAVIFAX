@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Nominas.Entidades;     // para EstatusEmpleado, EstatusObra, etc.
-using Nominas.Web.Pages;     // para DatosPrueba
+using Nominas.Entidades;
+using Nominas.Negocios;
 
 namespace AplicacionNomina.Pages
 {
@@ -21,48 +21,65 @@ namespace AplicacionNomina.Pages
         // Presupuesto de cada obra activa
         public List<ResumenObra> Obras { get; set; } = new();
 
+        private List<Cliente> _clientes = new();
+        private readonly EmpleadoService _empleadoService;
+        private readonly ObraService _obraService;
+        private readonly ClienteService _clienteService;
+        private readonly PrestamoService _prestamoService;
+        private readonly NominaService _nominaService;
+
+        public IndexModel(EmpleadoService empleadoService, ObraService obraService, ClienteService clienteService,
+                          PrestamoService prestamoService, NominaService nominaService)
+        {
+            _empleadoService = empleadoService;
+            _obraService = obraService;
+            _clienteService = clienteService;
+            _prestamoService = prestamoService;
+            _nominaService = nominaService;
+        }
+
         public void OnGet()
         {
-            // Datos de prueba: el backend los cambiará por consultas a la base de datos
-            EmpleadosActivos = DatosPrueba.Empleados
-                .Count(e => e.Estatus == EstatusEmpleado.Activo);
-
-            ObrasActivas = DatosPrueba.Obras.Count(o => o.Estatus == EstatusObra.Activa);
+            EmpleadosActivos = _empleadoService.ListarActivos().Count;
 
             // Pagos pendientes de nóminas ya autorizadas (los del borrador todavía no son pagos reales)
-            var pendientes = DatosPrueba.PagosEmpleado
-                .Where(p => p.Estatus == EstatusPago.Pendiente &&
-                            DatosPrueba.Nominas.First(n => n.IdNomina == p.IdNomina).Estatus != EstatusNomina.Borrador)
-                .ToList();
+            var pendientes = _nominaService.PagosPorEntregar();
             PagosPendientes = pendientes.Count;
             PagosPendientesTotal = pendientes.Sum(p => p.TotalNeto);
 
-            PrestamosActivos = DatosPrueba.Prestamos.Count(p => p.Estatus == EstatusPrestamo.Activo);
-            PrestamosTotal = DatosPrueba.Prestamos
-                .Where(p => p.Estatus == EstatusPrestamo.Activo)
-                .Sum(p => p.SaldoPendiente);
+            var prestamosActivos = _prestamoService.Listar().Where(p => p.Estatus == EstatusPrestamo.Activo).ToList();
+            PrestamosActivos = prestamosActivos.Count;
+            PrestamosTotal = prestamosActivos.Sum(p => p.SaldoPendiente);
 
-            NominaEnBorrador = DatosPrueba.Nominas.FirstOrDefault(n => n.Estatus == EstatusNomina.Borrador);
+            NominaEnBorrador = _nominaService.Listar().FirstOrDefault(n => n.Estatus == EstatusNomina.Borrador);
 
-            // Una tarjeta por obra activa con su saldo (RN-12)
-            Obras = DatosPrueba.Obras
+            // Una tarjeta por obra activa con su saldo (RN-12); el cálculo lo hace ObraService
+            _clientes = _clienteService.Listar();
+            Obras = _obraService.Listar()
                 .Where(o => o.Estatus == EstatusObra.Activa)
                 .Select(o =>
                 {
-                    var gastado = DatosPrueba.GastadoPorObra.GetValueOrDefault(o.IdObra);
-                    var saldo = o.PresupuestoManoObra - gastado;
+                    var resumen = _obraService.ObtenerResumen(o);
                     return new ResumenObra
                     {
                         Obra = o,
-                        Gastado = gastado,
-                        Saldo = saldo,
-                        Porcentaje = o.PresupuestoManoObra > 0 ? (int)(gastado * 100 / o.PresupuestoManoObra) : 0,
-                        Alerta = saldo <= o.LimiteAlertaSaldo
+                        Gastado = resumen.Gastado,
+                        Saldo = resumen.Saldo,
+                        Porcentaje = resumen.Porcentaje,
+                        Alerta = resumen.Alerta
                     };
                 })
                 .ToList();
 
+            ObrasActivas = Obras.Count;
             ObrasConSaldoBajo = Obras.Count(r => r.Alerta);
+        }
+
+        public string SemanaBorrador => NominaEnBorrador == null ? "" : NominaService.Semana(NominaEnBorrador);
+
+        public string NombreCliente(int idCliente)
+        {
+            return _clientes.FirstOrDefault(c => c.IdCliente == idCliente)?.Nombre ?? "—";
         }
 
         // Clase pequeña solo para esta pantalla: los números de una obra

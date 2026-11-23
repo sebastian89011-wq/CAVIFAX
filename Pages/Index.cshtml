@@ -16,7 +16,7 @@
     <div class="alert alert-warning d-flex justify-content-between align-items-center">
         <span>
             <strong>Nómina sin autorizar:</strong>
-            la semana del @DatosPrueba.Semana(Model.NominaEnBorrador) está en borrador.
+            la semana del @Model.SemanaBorrador está en borrador.
         </span>
         <a asp-page="/NominaSemanal/Detalle" asp-route-id="@Model.NominaEnBorrador.IdNomina" class="btn btn-sm btn-warning">Revisar</a>
     </div>
@@ -90,7 +90,7 @@
                             <span class="badge bg-danger">Saldo bajo</span>
                         }
                     </div>
-                    <div class="text-muted small mb-2">@DatosPrueba.NombreCliente(r.Obra.IdCliente)</div>
+                    <div class="text-muted small mb-2">@Model.NombreCliente(r.Obra.IdCliente)</div>
 
                     <div class="progress mb-2" style="height: 20px">
                         <div class="progress-bar @(r.Alerta ? "bg-danger" : "")" style="width: @r.Porcentaje%">@r.Porcentaje%</div>

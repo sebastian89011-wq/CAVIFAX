@@ -44,6 +44,22 @@ public class NominaService
     }
 
     /// <summary>
+    /// Pagos que faltan por entregar de todas las nóminas autorizadas
+    /// (los del borrador todavía no son pagos reales).
+    /// </summary>
+    public List<PagoEmpleado> PagosPorEntregar()
+    {
+        var idsNoBorrador = _db.Nominas
+            .Where(n => n.Estatus != EstatusNomina.Borrador)
+            .Select(n => n.IdNomina)
+            .ToList();
+
+        return _db.PagosEmpleado
+            .Where(p => idsNoBorrador.Contains(p.IdNomina) && p.Estatus == EstatusPago.Pendiente)
+            .ToList();
+    }
+
+    /// <summary>
     /// RN-13: pagos pendientes de nóminas anteriores a esta que ya no están en borrador.
     /// </summary>
     public List<PagoEmpleado> PagosPendientesAnteriores(int idNomina)
