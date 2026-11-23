@@ -9,6 +9,7 @@
 <div class="card mb-4">
     <div class="card-body">
         <form method="post" class="row g-2 align-items-end">
+            <div asp-validation-summary="All" class="col-12 text-danger"></div>
             <div class="col-auto">
                 <label asp-for="SemanaAGenerar" class="form-label">Generar la nómina de la semana del día</label>
                 <input asp-for="SemanaAGenerar" type="date" class="form-control" required />
@@ -42,7 +43,7 @@
             var pendientes = Model.PagosPendientes(n.IdNomina);
 
             <tr>
-                <td><a asp-page="Detalle" asp-route-id="@n.IdNomina">@DatosPrueba.Semana(n)</a></td>
+                <td><a asp-page="Detalle" asp-route-id="@n.IdNomina">@Model.Semana(n)</a></td>
                 <td><span class="badge @claseEstatus">@n.Estatus</span></td>
                 <td>@(n.FechaAutorizacion?.ToString("dd/MM/yyyy HH:mm") ?? "—")</td>
                 <td class="text-end">@Model.TotalNeto(n.IdNomina).ToString("C")</td>

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Nominas.Entidades;
+using Nominas.Negocios;
 
 namespace Nominas.Web.Pages.NominaSemanal
 {
@@ -12,29 +13,48 @@ namespace Nominas.Web.Pages.NominaSemanal
         [BindProperty]
         public DateOnly SemanaAGenerar { get; set; }
 
+        private readonly NominaService _nominaService;
+
+        public IndexModel(NominaService nominaService)
+        {
+            _nominaService = nominaService;
+        }
+
         public void OnGet()
         {
-            // Datos de prueba, de la semana más reciente a la más antigua
-            Nominas = DatosPrueba.Nominas.OrderByDescending(n => n.FechaInicio).ToList();
+            Nominas = _nominaService.Listar();
             SemanaAGenerar = DateOnly.FromDateTime(DateTime.Today);
         }
 
         public IActionResult OnPost()
         {
-            // Aquí el backend generará el borrador a partir de las asistencias de esa semana.
-            // Si ya existe una nómina para esa semana, devuelve la existente (RN-09: una por semana).
-            int idNomina = 3; // dato de prueba: el borrador actual
-            return RedirectToPage("Detalle", new { id = idNomina });
+            try
+            {
+                // Si ya existe una nómina para esa semana, devuelve la existente (RN-09)
+                int idNomina = _nominaService.GenerarBorrador(SemanaAGenerar);
+                return RedirectToPage("Detalle", new { id = idNomina });
+            }
+            catch (ValidacionException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                Nominas = _nominaService.Listar();
+                return Page();
+            }
         }
 
         public decimal TotalNeto(int idNomina)
         {
-            return DatosPrueba.PagosEmpleado.Where(p => p.IdNomina == idNomina).Sum(p => p.TotalNeto);
+            return _nominaService.TotalNeto(idNomina);
         }
 
         public int PagosPendientes(int idNomina)
         {
-            return DatosPrueba.PagosEmpleado.Count(p => p.IdNomina == idNomina && p.Estatus == EstatusPago.Pendiente);
+            return _nominaService.ContarPagosPendientes(idNomina);
+        }
+
+        public string Semana(Nomina n)
+        {
+            return NominaService.Semana(n);
         }
     }
 }

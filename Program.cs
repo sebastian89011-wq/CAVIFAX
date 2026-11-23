@@ -13,6 +13,7 @@ builder.Services.AddScoped<EmpleadoService>();
 builder.Services.AddScoped<ObraService>();
 builder.Services.AddScoped<PrestamoService>();
 builder.Services.AddScoped<AsistenciaService>();
+builder.Services.AddScoped<NominaService>();
 
 // Add services to the container.
 builder.Services.AddRazorPages();
