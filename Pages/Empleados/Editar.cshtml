@@ -8,6 +8,7 @@
 <h1>Editar empleado</h1>
 
 <form method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
     <input type="hidden" asp-for="Empleado.IdEmpleado" />
     <h5 class="mt-4">Datos personales</h5>
     <div class="row">

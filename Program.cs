@@ -1,10 +1,19 @@
 using Microsoft.EntityFrameworkCore;
 using Nominas.Datos;
+using Nominas.Negocios;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<NominasDbContext>(options =>
     options.UseMySQL(builder.Configuration.GetConnectionString("Nominas")!));
+
+builder.Services.AddScoped<PuestoService>();
+builder.Services.AddScoped<ClienteService>();
+builder.Services.AddScoped<EmpleadoService>();
+builder.Services.AddScoped<ObraService>();
+builder.Services.AddScoped<PrestamoService>();
+builder.Services.AddScoped<AsistenciaService>();
+builder.Services.AddScoped<NominaService>();
 
 // Add services to the container.
 builder.Services.AddRazorPages();

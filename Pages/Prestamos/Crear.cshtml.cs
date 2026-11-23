@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Nominas.Entidades;
+using Nominas.Negocios;
 
 namespace Nominas.Web.Pages.Prestamos
 {
@@ -11,6 +12,12 @@ namespace Nominas.Web.Pages.Prestamos
         public Prestamo Prestamo { get; set; } = new();
 
         public List<SelectListItem> Empleados { get; set; } = new();
+        private readonly PrestamoService _prestamoService;
+
+        public CrearModel(PrestamoService prestamoService)
+        {
+            _prestamoService = prestamoService;
+        }
 
         public void OnGet()
         {
@@ -20,21 +27,24 @@ namespace Nominas.Web.Pages.Prestamos
 
         public IActionResult OnPost()
         {
-            // Aquí el backend guardará el préstamo con SaldoPendiente = Monto y Estatus = Activo
-            return RedirectToPage("Index");
+            try
+            {
+                _prestamoService.Crear(Prestamo);
+                return RedirectToPage("Index");
+            }
+            catch (ValidacionException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                CargarEmpleados();
+                return Page();
+            }
         }
 
         private void CargarEmpleados()
         {
-            // RN-14: un empleado solo puede tener un préstamo o anticipo activo a la vez
-            var conPrestamoActivo = DatosPrueba.Prestamos
-                .Where(p => p.Estatus == EstatusPrestamo.Activo)
-                .Select(p => p.IdEmpleado)
-                .ToList();
-
-            Empleados = DatosPrueba.Empleados
-                .Where(e => e.Estatus == EstatusEmpleado.Activo && !conPrestamoActivo.Contains(e.IdEmpleado))
-                .Select(e => new SelectListItem(e.Nombre + " " + e.ApellidoPaterno, e.IdEmpleado.ToString()))
+            // RN-14: solo empleados activos sin otro préstamo o anticipo activo
+            Empleados = _prestamoService.EmpleadosDisponibles()
+                .Select(e => new SelectListItem(EmpleadoService.NombreCompleto(e), e.IdEmpleado.ToString()))
                 .ToList();
         }
     }

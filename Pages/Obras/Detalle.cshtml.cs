@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Nominas.Entidades;
+using Nominas.Negocios;
 
 namespace Nominas.Web.Pages.Obras
 {
@@ -12,12 +13,27 @@ namespace Nominas.Web.Pages.Obras
         public int Porcentaje { get; set; }
         public bool Alerta { get; set; }
 
+        public string NombreCliente { get; set; } = string.Empty;
+        public string NombreResponsable { get; set; } = string.Empty;
+        public string NombreSupervisor { get; set; } = string.Empty;
+
         // Lo que costó esta obra en cada nómina (una fila por semana)
-        public List<CostoSemana> CostosPorNomina { get; set; } = new();
+        public List<CostoSemanaObra> CostosPorNomina { get; set; } = new();
+
+        private readonly ObraService _obraService;
+        private readonly ClienteService _clienteService;
+        private readonly EmpleadoService _empleadoService;
+
+        public DetalleModel(ObraService obraService, ClienteService clienteService, EmpleadoService empleadoService)
+        {
+            _obraService = obraService;
+            _clienteService = clienteService;
+            _empleadoService = empleadoService;
+        }
 
         public IActionResult OnGet(int id)
         {
-            var encontrada = DatosPrueba.Obras.FirstOrDefault(o => o.IdObra == id);
+            var encontrada = _obraService.ObtenerPorId(id);
             if (encontrada == null)
             {
                 return NotFound();
@@ -25,35 +41,30 @@ namespace Nominas.Web.Pages.Obras
 
             Obra = encontrada;
 
-            // Datos de prueba: el backend calculará el saldo con las nóminas autorizadas (RN-12)
-            Gastado = DatosPrueba.GastadoPorObra.GetValueOrDefault(id);
-            Saldo = Obra.PresupuestoManoObra - Gastado;
-            Porcentaje = Obra.PresupuestoManoObra > 0 ? (int)(Gastado * 100 / Obra.PresupuestoManoObra) : 0;
-            Alerta = Saldo <= Obra.LimiteAlertaSaldo;
+            // El cálculo del presupuesto vive en Negocios (RN-12); la página solo lo muestra
+            var resumen = _obraService.ObtenerResumen(Obra);
+            Gastado = resumen.Gastado;
+            Saldo = resumen.Saldo;
+            Porcentaje = resumen.Porcentaje;
+            Alerta = resumen.Alerta;
 
-            CostosPorNomina = DatosPrueba.DetallesNomina
-                .Where(d => d.IdObra == id)
-                .GroupBy(d => d.IdNomina)
-                .Select(g => new CostoSemana
-                {
-                    Nomina = DatosPrueba.Nominas.First(n => n.IdNomina == g.Key),
-                    Trabajadores = g.Select(d => d.IdEmpleado).Distinct().Count(),
-                    Dias = g.Sum(d => d.DiasTrabajados),
-                    Total = g.Sum(d => d.CostoBruto)
-                })
-                .OrderByDescending(c => c.Nomina.FechaInicio)
-                .ToList();
+            NombreCliente = _clienteService.ObtenerPorId(Obra.IdCliente)?.Nombre ?? "—";
+            NombreResponsable = NombreEmpleado(Obra.IdResponsable);
+            NombreSupervisor = NombreEmpleado(Obra.IdSupervisor);
 
+            CostosPorNomina = _obraService.CostosPorNomina(id);
             return Page();
         }
 
-        // Clase pequeña solo para esta pantalla: una fila de la tabla de costos
-        public class CostoSemana
+        public string Semana(Nomina n)
         {
-            public Nomina Nomina { get; set; } = new();
-            public int Trabajadores { get; set; }
-            public int Dias { get; set; }
-            public decimal Total { get; set; }
+            return $"{n.FechaInicio:dd/MM} al {n.FechaFin:dd/MM/yyyy}";
+        }
+
+        private string NombreEmpleado(int idEmpleado)
+        {
+            var e = _empleadoService.ObtenerPorId(idEmpleado);
+            return e == null ? "—" : EmpleadoService.NombreCompleto(e);
         }
     }
 }

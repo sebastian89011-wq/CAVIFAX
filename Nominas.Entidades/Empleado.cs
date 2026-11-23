@@ -18,7 +18,7 @@ public class Empleado
     public string ClaveIne { get; set; } = string.Empty;
     /// <summary>Indica si el empleado entregó toda su documentación.</summary>
     public bool DocumentosCompletos { get; set; }
-    public string? Especialidad { get; set; }
+    public Especialidad? Especialidad { get; set; }
     public TipoContratacion TipoContratacion { get; set; }
     public EstatusEmpleado Estatus { get; set; }
     public DateOnly FechaIngreso { get; set; }

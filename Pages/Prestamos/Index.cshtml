@@ -6,13 +6,14 @@
 
 <h1>Préstamos y anticipos</h1>
 <a asp-page="Crear" class="btn btn-primary mb-3">+ Nuevo préstamo</a>
+<div asp-validation-summary="All" class="text-danger"></div>
 
 <table class="table table-striped align-middle">
     <thead>
         <tr>
             <th>Empleado</th><th>Tipo</th><th>Fecha</th>
             <th class="text-end">Monto</th><th class="text-end">Abono semanal</th>
-            <th>Pagado</th><th class="text-end">Saldo pendiente</th><th>Estatus</th>
+            <th>Pagado</th><th class="text-end">Saldo pendiente</th><th>Estatus</th><th></th>
         </tr>
     </thead>
     <tbody>
@@ -22,7 +23,7 @@
             var porcentaje = p.Monto > 0 ? (int)(pagado * 100 / p.Monto) : 0;
 
             <tr>
-                <td><a asp-page="Detalle" asp-route-id="@p.IdPrestamo">@DatosPrueba.NombreEmpleado(p.IdEmpleado)</a></td>
+                <td><a asp-page="Detalle" asp-route-id="@p.IdPrestamo">@Model.NombreEmpleado(p.IdEmpleado)</a></td>
                 <td>@p.Tipo</td>
                 <td>@p.Fecha.ToString("dd/MM/yyyy")</td>
                 <td class="text-end">@p.Monto.ToString("C")</td>
@@ -42,6 +43,12 @@
                     {
                         <span class="badge bg-secondary">Liquidado</span>
                     }
+                </td>
+                <td class="text-end">
+                    <form method="post" asp-page-handler="Eliminar" asp-route-id="@p.IdPrestamo" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-outline-danger"
+                                onclick="return confirm('¿Seguro que deseas eliminarlo?');">Cancelar préstamo</button>
+                    </form>
                 </td>
             </tr>
         }

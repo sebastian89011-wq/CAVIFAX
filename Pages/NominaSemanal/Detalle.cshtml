@@ -2,7 +2,7 @@
 @model Nominas.Web.Pages.NominaSemanal.DetalleModel
 @{
     var n = Model.Nomina;
-    ViewData["Title"] = "Nómina " + DatosPrueba.Semana(n);
+    ViewData["Title"] = "Nómina " + Model.Semana;
     var esBorrador = n.Estatus == EstatusNomina.Borrador;
     var claseEstatus = n.Estatus switch
     {
@@ -14,7 +14,7 @@
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <div>
-        <h1 class="mb-0">Nómina del @DatosPrueba.Semana(n)</h1>
+        <h1 class="mb-0">Nómina del @Model.Semana</h1>
         <span class="badge @claseEstatus">@n.Estatus</span>
         @if (n.FechaAutorizacion != null)
         {
@@ -24,10 +24,21 @@
     <a asp-page="Index" class="btn btn-secondary">Volver</a>
 </div>
 
+<div asp-validation-summary="All" class="text-danger"></div>
+
 @if (esBorrador)
 {
     <div class="alert alert-warning">
         <strong>Borrador.</strong> Revisa los montos. Al autorizar, la nómina ya no se puede modificar (RN-09).
+        <div class="mt-2">
+            <form method="post" asp-page-handler="Recalcular" asp-route-id="@n.IdNomina" class="d-inline">
+                <button type="submit" class="btn btn-sm btn-outline-dark">Recalcular con las asistencias actuales</button>
+            </form>
+            <form method="post" asp-page-handler="Eliminar" asp-route-id="@n.IdNomina" class="d-inline">
+                <button type="submit" class="btn btn-sm btn-outline-danger"
+                        onclick="return confirm('¿Seguro que deseas eliminarlo?');">Eliminar borrador</button>
+            </form>
+        </div>
     </div>
 }
 
@@ -53,7 +64,7 @@
 {
     <div class="card mb-3">
         <div class="card-header d-flex justify-content-between">
-            <a asp-page="/Obras/Detalle" asp-route-id="@grupo.Key" class="fw-bold">@DatosPrueba.NombreObra(grupo.Key)</a>
+            <a asp-page="/Obras/Detalle" asp-route-id="@grupo.Key" class="fw-bold">@Model.NombreObra(grupo.Key)</a>
             <span>Subtotal: <strong>@grupo.Sum(d => d.CostoBruto).ToString("C")</strong></span>
         </div>
         <div class="card-body p-0">
@@ -69,7 +80,7 @@
                     @foreach (var d in grupo)
                     {
                         <tr>
-                            <td>@DatosPrueba.NombreEmpleado(d.IdEmpleado)</td>
+                            <td>@Model.NombreEmpleado(d.IdEmpleado)</td>
                             <td class="text-end">@d.DiasTrabajados</td>
                             <td class="text-end">@d.SueldoDiarioAplicado.ToString("C")</td>
                             <td class="text-end">@d.HorasExtra</td>
@@ -97,7 +108,7 @@
         @foreach (var p in Model.Pagos)
         {
             <tr>
-                <td>@DatosPrueba.NombreEmpleado(p.IdEmpleado)</td>
+                <td>@Model.NombreEmpleado(p.IdEmpleado)</td>
                 <td class="text-end">@p.TotalBruto.ToString("C")</td>
                 <td class="text-end">@(p.TotalDescuentos > 0 ? "−" + p.TotalDescuentos.ToString("C") : "—")</td>
                 <td class="text-end fw-bold">@p.TotalNeto.ToString("C")</td>
@@ -138,7 +149,7 @@
             @foreach (var p in Model.PendientesAnteriores)
             {
                 <tr>
-                    <td>@DatosPrueba.NombreEmpleado(p.IdEmpleado)</td>
+                    <td>@Model.NombreEmpleado(p.IdEmpleado)</td>
                     <td><a asp-page="Detalle" asp-route-id="@p.IdNomina">@Model.SemanaDeNomina(p.IdNomina)</a></td>
                     <td class="text-end fw-bold">@p.TotalNeto.ToString("C")</td>
                     <td class="text-end">

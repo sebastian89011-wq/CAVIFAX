@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Nominas.Entidades;
+using Nominas.Negocios;
 
 namespace Nominas.Web.Pages.Obras
 {
@@ -13,6 +14,19 @@ namespace Nominas.Web.Pages.Obras
         public List<SelectListItem> Clientes { get; set; } = new();
         public List<SelectListItem> Responsables { get; set; } = new();
         public List<SelectListItem> Supervisores { get; set; } = new();
+        private readonly ObraService _obraService;
+        private readonly ClienteService _clienteService;
+        private readonly EmpleadoService _empleadoService;
+        private readonly PuestoService _puestoService;
+
+        public CrearModel(ObraService obraService, ClienteService clienteService,
+                          EmpleadoService empleadoService, PuestoService puestoService)
+        {
+            _obraService = obraService;
+            _clienteService = clienteService;
+            _empleadoService = empleadoService;
+            _puestoService = puestoService;
+        }
 
         public void OnGet()
         {
@@ -23,26 +37,35 @@ namespace Nominas.Web.Pages.Obras
 
         public IActionResult OnPost()
         {
-            // Aquí el backend validará (RN-05) y guardará la obra con estatus Activa
-            return RedirectToPage("Index");
+            try
+            {
+                _obraService.Crear(Obra);
+                return RedirectToPage("Index");
+            }
+            catch (ValidacionException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                CargarListas();
+                return Page();
+            }
         }
 
         private void CargarListas()
         {
-            // Datos de prueba. Puesto 1 = Ingeniero, Puesto 4 = Supervisor general
-            Clientes = DatosPrueba.Clientes
+            Clientes = _clienteService.Listar()
                 .Select(c => new SelectListItem(c.Nombre, c.IdCliente.ToString()))
                 .ToList();
 
-            Responsables = DatosPrueba.Empleados
-                .Where(e => e.IdPuesto == 1 && e.Estatus == EstatusEmpleado.Activo)
-                .Select(e => new SelectListItem(e.Nombre + " " + e.ApellidoPaterno, e.IdEmpleado.ToString()))
+            // Responsable y supervisor: cualquier empleado activo; se muestra su puesto para elegir mejor
+            var puestos = _puestoService.Listar();
+            var empleados = _empleadoService.ListarActivos()
+                .Select(e => new SelectListItem(
+                    EmpleadoService.NombreCompleto(e) + " (" + (puestos.FirstOrDefault(p => p.IdPuesto == e.IdPuesto)?.Nombre ?? "—") + ")",
+                    e.IdEmpleado.ToString()))
                 .ToList();
 
-            Supervisores = DatosPrueba.Empleados
-                .Where(e => e.IdPuesto == 4 && e.Estatus == EstatusEmpleado.Activo)
-                .Select(e => new SelectListItem(e.Nombre + " " + e.ApellidoPaterno, e.IdEmpleado.ToString()))
-                .ToList();
+            Responsables = empleados;
+            Supervisores = empleados;
         }
     }
 }

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Nominas.Entidades;
+using Nominas.Negocios;
 
 namespace Nominas.Web.Pages.NominaSemanal
 {
@@ -16,54 +17,127 @@ namespace Nominas.Web.Pages.NominaSemanal
         [BindProperty]
         public decimal EfectivoRecibido { get; set; }
 
-        public decimal TotalBruto => Pagos.Sum(p => p.TotalBruto);
-        public decimal TotalDescuentos => Pagos.Sum(p => p.TotalDescuentos);
-        public decimal TotalNeto => Pagos.Sum(p => p.TotalNeto);
-        public decimal TotalPendientesAnteriores => PendientesAnteriores.Sum(p => p.TotalNeto);
+        // Los totales vienen calculados del servicio
+        public decimal TotalBruto { get; set; }
+        public decimal TotalDescuentos { get; set; }
+        public decimal TotalNeto { get; set; }
+        public decimal TotalPendientesAnteriores { get; set; }
+
+        private NominaDetalle _datos = new();
+        private readonly NominaService _nominaService;
+
+        public DetalleModel(NominaService nominaService)
+        {
+            _nominaService = nominaService;
+        }
 
         public IActionResult OnGet(int id)
         {
-            var encontrada = DatosPrueba.Nominas.FirstOrDefault(n => n.IdNomina == id);
-            if (encontrada == null)
+            return CargarDatos(id) ? Page() : NotFound();
+        }
+
+        // Botón "Recalcular" (asp-page-handler="Recalcular"), solo en borrador
+        public IActionResult OnPostRecalcular(int id)
+        {
+            return Ejecutar(id, () => _nominaService.Recalcular(id));
+        }
+
+        // Botón "Eliminar borrador" (asp-page-handler="Eliminar"), solo en borrador
+        public IActionResult OnPostEliminar(int id)
+        {
+            try
             {
-                return NotFound();
+                _nominaService.EliminarBorrador(id);
+                return RedirectToPage("Index");
             }
-
-            Nomina = encontrada;
-            Detalles = DatosPrueba.DetallesNomina.Where(d => d.IdNomina == id).ToList();
-            Pagos = DatosPrueba.PagosEmpleado.Where(p => p.IdNomina == id).ToList();
-            PendientesAnteriores = DatosPrueba.PagosEmpleado
-                .Where(p => p.IdNomina < id && p.Estatus == EstatusPago.Pendiente)
-                .ToList();
-
-            // Sugerencia: el efectivo necesario = lo de esta semana + lo pendiente de semanas anteriores
-            EfectivoRecibido = Nomina.Estatus == EstatusNomina.Borrador
-                ? TotalNeto + TotalPendientesAnteriores
-                : Nomina.EfectivoRecibido;
-
-            return Page();
+            catch (ValidacionException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return CargarDatos(id) ? Page() : NotFound();
+            }
         }
 
         // Botón "Autorizar nómina" (asp-page-handler="Autorizar")
         public IActionResult OnPostAutorizar(int id)
         {
-            // Aquí el backend, en una transacción: fija tarifas y totales, guarda EfectivoRecibido,
-            // cambia a Autorizada, crea los abonos de préstamos y deja los pagos en Pendiente.
-            return RedirectToPage(new { id });
+            // TODO: usar el usuario de la sesión
+            int? idUsuario = _nominaService.PrimerUsuarioActivo();
+            if (idUsuario == null)
+            {
+                ModelState.AddModelError(string.Empty, "No hay ningún usuario activo para autorizar la nómina.");
+                return CargarDatos(id) ? Page() : NotFound();
+            }
+
+         
+            return Ejecutar(id, () => _nominaService.Autorizar(id, idUsuario.Value,EfectivoRecibido));
         }
 
-        // Botón "Marcar entregado" de cada pago (asp-page-handler="Entregar")
+        // Botón "Marcar entregado" de cada pago (asp-page-handler="Entregar").
+        // Se entrega en la semana de esta nómina (RN-13).
         public IActionResult OnPostEntregar(int id, int idPago)
         {
-            // Aquí el backend marcará el PagoEmpleado como Entregado, con la fecha de hoy
-            // y la nómina de la semana en que se entregó (RN-13).
-            return RedirectToPage(new { id });
+            return Ejecutar(id, () => _nominaService.MarcarPagoEntregado(idPago, id));
+        }
+
+        // Llama al servicio; si hay error lo muestra en la misma página
+        private IActionResult Ejecutar(int id, Action accion)
+        {
+            try
+            {
+                accion();
+                return RedirectToPage(new { id });
+            }
+            catch (ValidacionException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
+            catch (NotImplementedException)
+            {
+                ModelState.AddModelError(string.Empty, "Esta acción todavía no está implementada en NominaService.");
+            }
+            return CargarDatos(id) ? Page() : NotFound();
+        }
+
+        private bool CargarDatos(int id)
+        {
+            var datos = _nominaService.ObtenerDetalle(id);
+            if (datos == null)
+            {
+                return false;
+            }
+
+            _datos = datos;
+            Nomina = datos.Nomina;
+            Detalles = datos.Detalles;
+            Pagos = datos.Pagos;
+            PendientesAnteriores = datos.PendientesAnteriores;
+            TotalBruto = datos.TotalBruto;
+            TotalDescuentos = datos.TotalDescuentos;
+            TotalNeto = datos.TotalNeto;
+            TotalPendientesAnteriores = datos.TotalPendientesAnteriores;
+
+            // Sugerencia: el efectivo necesario = lo de esta semana + lo pendiente de semanas anteriores
+            EfectivoRecibido = Nomina.Estatus == EstatusNomina.Borrador
+                ? datos.EfectivoSugerido
+                : Nomina.EfectivoRecibido;
+            return true;
+        }
+
+        public string Semana => NominaService.Semana(Nomina);
+
+        public string NombreEmpleado(int idEmpleado)
+        {
+            return _datos.NombresEmpleado.GetValueOrDefault(idEmpleado, "—");
+        }
+
+        public string NombreObra(int idObra)
+        {
+            return _datos.NombresObra.GetValueOrDefault(idObra, "—");
         }
 
         public string SemanaDeNomina(int idNomina)
         {
-            var nomina = DatosPrueba.Nominas.FirstOrDefault(n => n.IdNomina == idNomina);
-            return nomina == null ? "—" : DatosPrueba.Semana(nomina);
+            return _datos.Semanas.GetValueOrDefault(idNomina, "—");
         }
     }
 }

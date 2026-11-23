@@ -11,6 +11,12 @@ public class NominasDbContext : DbContext
     {
     }
 
+    // Todas las propiedades DateOnly (y DateOnly?) se guardan y leen como DateTime en las columnas DATE
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        configurationBuilder.Properties<DateOnly>().HaveConversion<DateOnlyConverter>();
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -48,6 +54,9 @@ public class NominasDbContext : DbContext
         modelBuilder.Entity<Prestamo>().Property(p => p.Estatus).HasConversion(
             v => ASnakeCase(v.ToString()), v => Enum.Parse<EstatusPrestamo>(v.Replace("_", ""), true));
 
+        modelBuilder.Entity<Empleado>().Property(e => e.Especialidad).HasConversion(
+            v => ASnakeCase(v!.Value.ToString()), v => Enum.Parse<Especialidad>(v.Replace("_", ""), true));
+
         ///no repetidos
 
         modelBuilder.Entity<Empleado>().HasIndex(e => e.Curp).IsUnique();
@@ -57,7 +66,7 @@ public class NominasDbContext : DbContext
         modelBuilder.Entity<Empleado>().HasIndex(e => e.Nss).IsUnique();
         modelBuilder.Entity<Usuario>().HasIndex(u => u.IdEmpleado).IsUnique();
         modelBuilder.Entity<Usuario>().HasIndex(u => u.NombreUsuario).IsUnique();
-        modelBuilder.Entity<Nomina>().HasIndex(n => n.FechaInicio).IsUnique();
+        modelBuilder.Entity<Nomina>().HasIndex(n => new { n.FechaInicio, n.FechaFin }).IsUnique();
         modelBuilder.Entity<PagoEmpleado>().HasIndex(p => new { p.IdNomina, p.IdEmpleado }).IsUnique();
         modelBuilder.Entity<AbonoPrestamo>().HasIndex(a => new { a.IdPrestamo, a.IdNomina }).IsUnique();
 

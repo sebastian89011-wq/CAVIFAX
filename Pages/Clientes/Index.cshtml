@@ -6,6 +6,7 @@
 
 <h1>Clientes</h1>
 <a asp-page="Crear" class="btn btn-primary mb-3">+ Nuevo cliente</a>
+<div asp-validation-summary="All" class="text-danger"></div>
 <table class="table table-striped">
     <thead><tr><th>Nombre</th><th>Domicilio</th><th></th></tr></thead>
     <tbody>
@@ -14,7 +15,13 @@
             <tr>
                 <td>@c.Nombre</td>
                 <td>@c.Domicilio</td>
-                <td><a asp-page="Editar" asp-route-id="@c.IdCliente" class="btn btn-sm btn-outline-primary">Editar</a></td>
+                <td>
+                    <a asp-page="Editar" asp-route-id="@c.IdCliente" class="btn btn-sm btn-outline-primary">Editar</a>
+                    <form method="post" asp-page-handler="Eliminar" asp-route-id="@c.IdCliente" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-outline-danger"
+                                onclick="return confirm('¿Seguro que deseas eliminarlo?');">Eliminar</button>
+                    </form>
+                </td>
             </tr>
         }
     </tbody>
