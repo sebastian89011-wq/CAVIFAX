@@ -46,6 +46,7 @@ namespace Nominas.Web.Pages.Obras
             try
             {
                 _obraService.Editar(Obra);
+                TempData["Mensaje"] = "Obra actualizada.";
                 return RedirectToPage("Index");
             }
             catch (ValidacionException ex)

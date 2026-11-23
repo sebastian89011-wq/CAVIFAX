@@ -32,6 +32,7 @@ namespace Nominas.Web.Pages.Empleados
             try
             {
                 _empleadoService.Crear(Empleado);
+                TempData["Mensaje"] = "Empleado registrado.";
                 return RedirectToPage("Index");
             }
             catch (ValidacionException ex)

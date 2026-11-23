@@ -30,6 +30,7 @@ namespace Nominas.Web.Pages.Prestamos
             try
             {
                 _prestamoService.Crear(Prestamo);
+                TempData["Mensaje"] = "Préstamo registrado.";
                 return RedirectToPage("Index");
             }
             catch (ValidacionException ex)

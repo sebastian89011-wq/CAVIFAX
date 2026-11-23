@@ -53,6 +53,14 @@
 
     <div class="container">
         <main role="main" class="pb-3">
+            @* Mensaje de confirmación que deja una página antes de redirigir (TempData["Mensaje"]) *@
+            @if (TempData["Mensaje"] is string mensaje)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @mensaje
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                </div>
+            }
             @RenderBody()
         </main>
     </div>

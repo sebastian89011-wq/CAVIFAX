@@ -33,6 +33,7 @@ namespace Nominas.Web.Pages.Clientes
             try
             {
                 _clienteService.Editar(Cliente);
+                TempData["Mensaje"] = "Cliente actualizado.";
                 return RedirectToPage("Index");
             }
             catch (ValidacionException ex)

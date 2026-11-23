@@ -26,6 +26,7 @@ namespace Nominas.Web.Pages.Clientes
             try
             {
                 _clienteService.Eliminar(id);
+                TempData["Mensaje"] = "Cliente eliminado.";
                 return RedirectToPage("Index");
             }
             catch (ValidacionException ex)

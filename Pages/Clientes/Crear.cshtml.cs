@@ -25,6 +25,7 @@ namespace Nominas.Web.Pages.Clientes
             try
             {
                 _clienteService.Crear(Cliente);
+                TempData["Mensaje"] = "Cliente registrado.";
                 return RedirectToPage("Index");
             }
             catch (ValidacionException ex)

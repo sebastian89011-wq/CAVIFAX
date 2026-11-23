@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Nominas.Datos;
 using Nominas.Entidades;
 
@@ -15,6 +16,37 @@ public class ObraService
     public List<Obra> Listar()
     {
         return _db.Obras.OrderBy(o => o.IdObra).ToList();
+    }
+
+    /// <summary>
+    /// Búsqueda para la lista de obras: el texto se busca en el nombre de la obra, su ubicación
+    /// o el nombre del cliente. Si se da un estatus, solo devuelve las obras con ese estatus.
+    /// </summary>
+    public List<Obra> Buscar(string? texto, EstatusObra? estatus)
+    {
+        var consulta = _db.Obras.AsQueryable();
+
+        if (estatus != null)
+        {
+            consulta = consulta.Where(o => o.Estatus == estatus);
+        }
+
+        texto = texto?.Trim();
+        if (!string.IsNullOrEmpty(texto))
+        {
+            // LIKE respeta la intercalación de la columna: no distingue mayúsculas ni acentos
+            string patron = EmpleadoService.PatronLike(texto);
+            var idsCliente = _db.Clientes
+                .Where(c => EF.Functions.Like(c.Nombre, patron))
+                .Select(c => c.IdCliente)
+                .ToList();
+
+            consulta = consulta.Where(o => EF.Functions.Like(o.Nombre, patron)
+                                        || EF.Functions.Like(o.Ubicacion, patron)
+                                        || idsCliente.Contains(o.IdCliente));
+        }
+
+        return consulta.OrderBy(o => o.IdObra).ToList();
     }
 
     public Obra? ObtenerPorId(int id)

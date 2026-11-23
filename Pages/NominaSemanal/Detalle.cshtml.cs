@@ -39,7 +39,7 @@ namespace Nominas.Web.Pages.NominaSemanal
         // Botón "Recalcular" (asp-page-handler="Recalcular"), solo en borrador
         public IActionResult OnPostRecalcular(int id)
         {
-            return Ejecutar(id, () => _nominaService.Recalcular(id));
+            return Ejecutar(id, () => _nominaService.Recalcular(id), "Borrador recalculado con las asistencias actuales.");
         }
 
         // Botón "Eliminar borrador" (asp-page-handler="Eliminar"), solo en borrador
@@ -48,6 +48,7 @@ namespace Nominas.Web.Pages.NominaSemanal
             try
             {
                 _nominaService.EliminarBorrador(id);
+                TempData["Mensaje"] = "Borrador de nómina eliminado.";
                 return RedirectToPage("Index");
             }
             catch (ValidacionException ex)
@@ -69,22 +70,23 @@ namespace Nominas.Web.Pages.NominaSemanal
             }
 
          
-            return Ejecutar(id, () => _nominaService.Autorizar(id, idUsuario.Value,EfectivoRecibido));
+            return Ejecutar(id, () => _nominaService.Autorizar(id, idUsuario.Value,EfectivoRecibido), "Nómina autorizada.");
         }
 
         // Botón "Marcar entregado" de cada pago (asp-page-handler="Entregar").
         // Se entrega en la semana de esta nómina (RN-13).
         public IActionResult OnPostEntregar(int id, int idPago)
         {
-            return Ejecutar(id, () => _nominaService.MarcarPagoEntregado(idPago, id));
+            return Ejecutar(id, () => _nominaService.MarcarPagoEntregado(idPago, id), "Pago marcado como entregado.");
         }
 
         // Llama al servicio; si hay error lo muestra en la misma página
-        private IActionResult Ejecutar(int id, Action accion)
+        private IActionResult Ejecutar(int id, Action accion, string mensaje)
         {
             try
             {
                 accion();
+                TempData["Mensaje"] = mensaje;
                 return RedirectToPage(new { id });
             }
             catch (ValidacionException ex)

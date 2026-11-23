@@ -9,6 +9,15 @@ namespace Nominas.Web.Pages.Obras
     {
         public List<Obra> Obras { get; set; } = new();
         private List<Cliente> _clientes = new();
+
+        // Filtros de búsqueda (vienen en la URL: ?Buscar=...&Estatus=...)
+        [BindProperty(SupportsGet = true)]
+        public string? Buscar { get; set; }
+
+        [BindProperty(SupportsGet = true)]
+        public EstatusObra? Estatus { get; set; }
+
+        public bool HayFiltro => !string.IsNullOrWhiteSpace(Buscar) || Estatus != null;
         private readonly ObraService _obraService;
         private readonly ClienteService _clienteService;
 
@@ -20,7 +29,7 @@ namespace Nominas.Web.Pages.Obras
 
         public void OnGet()
         {
-            Obras = _obraService.Listar();
+            Obras = _obraService.Buscar(Buscar, Estatus);
             _clientes = _clienteService.Listar();
         }
 
