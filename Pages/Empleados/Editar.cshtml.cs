@@ -39,6 +39,7 @@ namespace Nominas.Web.Pages.Empleados
             try
             {
                 _empleadoService.Editar(Empleado);
+                TempData["Mensaje"] = "Empleado actualizado.";
                 return RedirectToPage("Index");
             }
             catch (ValidacionException ex)

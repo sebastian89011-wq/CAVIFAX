@@ -32,6 +32,10 @@
         </tr>
     </thead>
     <tbody>
+        @if (Model.Nominas.Count == 0)
+        {
+            <tr><td colspan="6" class="text-center text-muted py-4">Todavía no hay nóminas. Captura las asistencias de una semana y genera su borrador.</td></tr>
+        }
         @foreach (var n in Model.Nominas)
         {
             var claseEstatus = n.Estatus switch

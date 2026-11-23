@@ -42,6 +42,10 @@
                 </tr>
             </thead>
             <tbody>
+                @if (Model.EmpleadosActivos.Count == 0)
+                {
+                    <tr><td colspan="@(Model.Dias.Count + 1)" class="text-center text-muted py-4">No hay empleados activos para capturar asistencias.</td></tr>
+                }
                 @{ int i = 0; } @* Posición en la lista Registros *@
                 @foreach (var empleado in Model.EmpleadosActivos)
                 {

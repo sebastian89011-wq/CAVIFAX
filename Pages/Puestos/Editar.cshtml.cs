@@ -38,6 +38,7 @@ namespace Nominas.Web.Pages.Puestos
             try
             {
                 _puestoService.Editar(Puesto);
+                TempData["Mensaje"] = "Puesto actualizado.";
                 return RedirectToPage("Index");
             }
             catch (ValidacionException ex)

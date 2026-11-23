@@ -40,6 +40,7 @@ namespace Nominas.Web.Pages.Obras
             try
             {
                 _obraService.Crear(Obra);
+                TempData["Mensaje"] = "Obra registrada.";
                 return RedirectToPage("Index");
             }
             catch (ValidacionException ex)

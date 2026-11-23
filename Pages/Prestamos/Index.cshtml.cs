@@ -29,6 +29,7 @@ namespace Nominas.Web.Pages.Prestamos
             try
             {
                 _prestamoService.Cancelar(id);
+                TempData["Mensaje"] = "Préstamo cancelado.";
                 return RedirectToPage("Index");
             }
             catch (ValidacionException ex)

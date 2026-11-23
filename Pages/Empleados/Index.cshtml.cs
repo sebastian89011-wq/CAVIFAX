@@ -9,6 +9,15 @@ namespace Nominas.Web.Pages.Empleados
     {
         public List<Empleado> Empleados { get; set; } = new();
         public List<Puesto> Puestos { get; set; } = new();
+
+        // Filtros de búsqueda (vienen en la URL: ?Buscar=...&Estatus=...)
+        [BindProperty(SupportsGet = true)]
+        public string? Buscar { get; set; }
+
+        [BindProperty(SupportsGet = true)]
+        public EstatusEmpleado? Estatus { get; set; }
+
+        public bool HayFiltro => !string.IsNullOrWhiteSpace(Buscar) || Estatus != null;
         private readonly EmpleadoService _empleadoService;
         private readonly PuestoService _puestoService;
 
@@ -21,7 +30,7 @@ namespace Nominas.Web.Pages.Empleados
         public void OnGet()
         {
             Puestos = _puestoService.Listar();
-            Empleados = _empleadoService.Listar();
+            Empleados = _empleadoService.Buscar(Buscar, Estatus);
         }
 
         public string NombrePuesto(int idPuesto)

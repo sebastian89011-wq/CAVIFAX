@@ -27,6 +27,7 @@ namespace Nominas.Web.Pages.Puestos
             try
             {
                 _puestoService.Eliminar(id);
+                TempData["Mensaje"] = "Puesto eliminado.";
                 return RedirectToPage("Index");
             }
             catch (ValidacionException ex)

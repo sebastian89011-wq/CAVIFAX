@@ -26,6 +26,7 @@ namespace Nominas.Web.Pages.Puestos
             {
                 _puestoService.Crear(Puesto);
 
+                TempData["Mensaje"] = "Puesto registrado.";
                 return RedirectToPage("Index");
             }
             catch (ValidacionException ex)

@@ -8,6 +8,26 @@
 <h1>Empleados</h1>
 <a asp-page="Crear" class="btn btn-primary mb-3">+ Nuevo empleado</a>
 
+<form method="get" class="row g-2 align-items-end mb-3">
+    <div class="col-md-5">
+        <label asp-for="Buscar" class="form-label">Buscar</label>
+        <input asp-for="Buscar" class="form-control" placeholder="Nombre, apellido, CURP o NSS" />
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Estatus" class="form-label">Estatus</label>
+        <select asp-for="Estatus" asp-items="Html.GetEnumSelectList<EstatusEmpleado>()" class="form-select">
+            <option value="">Todos</option>
+        </select>
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-outline-primary">Buscar</button>
+        @if (Model.HayFiltro)
+        {
+            <a asp-page="Index" class="btn btn-outline-secondary">Limpiar</a>
+        }
+    </div>
+</form>
+
 <table class="table table-striped align-middle">
     <thead>
         <tr>
@@ -21,6 +41,14 @@
         </tr>
     </thead>
     <tbody>
+        @if (Model.Empleados.Count == 0)
+        {
+            <tr>
+                <td colspan="7" class="text-center text-muted py-4">
+                    @(Model.HayFiltro ? "Ningún empleado coincide con la búsqueda." : "Todavía no hay empleados registrados.")
+                </td>
+            </tr>
+        }
         @foreach (var e in Model.Empleados)
         {
             <tr>

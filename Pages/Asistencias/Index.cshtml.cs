@@ -51,6 +51,7 @@ namespace Nominas.Web.Pages.Asistencias
                 try
                 {
                     _asistenciaService.GuardarSemana(Registros);
+                    TempData["Mensaje"] = "Asistencias guardadas.";
                     return RedirectToPage(new { Semana = Semana.ToString("yyyy-MM-dd") });
                 }
                 catch (ValidacionException ex)

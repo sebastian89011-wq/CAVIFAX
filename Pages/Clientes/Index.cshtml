@@ -10,6 +10,10 @@
 <table class="table table-striped">
     <thead><tr><th>Nombre</th><th>Domicilio</th><th></th></tr></thead>
     <tbody>
+        @if (Model.Clientes.Count == 0)
+        {
+            <tr><td colspan="3" class="text-center text-muted py-4">Todavía no hay clientes registrados.</td></tr>
+        }
         @foreach (var c in Model.Clientes)
         {
             <tr>

@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Nominas.Datos;
 using Nominas.Entidades;
 
@@ -15,6 +16,45 @@ public class EmpleadoService
     public List<Empleado> Listar()
     {
         return _db.Empleados.OrderBy(e => e.IdEmpleado).ToList();
+    }
+
+    /// <summary>
+    /// Búsqueda para la lista de empleados. Cada palabra del texto debe aparecer en el nombre,
+    /// algún apellido, la CURP o el NSS (así "juan perez" encuentra a Juan Pérez López).
+    /// Si se da un estatus, solo devuelve los empleados con ese estatus.
+    /// </summary>
+    public List<Empleado> Buscar(string? texto, EstatusEmpleado? estatus)
+    {
+        var consulta = _db.Empleados.AsQueryable();
+
+        if (estatus != null)
+        {
+            consulta = consulta.Where(e => e.Estatus == estatus);
+        }
+
+        // Se usa LIKE (y no Contains) porque LIKE respeta la intercalación utf8mb4_unicode_ci
+        // de la columna: así "perez" también encuentra "Pérez".
+        var palabras = (texto ?? "").Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        foreach (var palabra in palabras)
+        {
+            string patron = PatronLike(palabra);
+            consulta = consulta.Where(e => EF.Functions.Like(e.Nombre, patron)
+                                        || EF.Functions.Like(e.ApellidoPaterno, patron)
+                                        || (e.ApellidoMaterno != null && EF.Functions.Like(e.ApellidoMaterno, patron))
+                                        || EF.Functions.Like(e.Curp, patron)
+                                        || EF.Functions.Like(e.Nss, patron));
+        }
+
+        return consulta.OrderBy(e => e.IdEmpleado).ToList();
+    }
+
+    /// <summary>
+    /// Patrón "%texto%" para LIKE. Escapa \, % y _ para que el usuario los busque como texto normal.
+    /// </summary>
+    public static string PatronLike(string texto)
+    {
+        string escapado = texto.Replace("\\", "\\\\").Replace("%", "\\%").Replace("_", "\\_");
+        return "%" + escapado + "%";
     }
 
     // Solo los activos pueden ser responsables de obra, registrar asistencia o recibir préstamos
