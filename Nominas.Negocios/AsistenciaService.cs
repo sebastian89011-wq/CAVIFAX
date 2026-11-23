@@ -12,15 +12,17 @@ public class AsistenciaService
 
     public AsistenciaService(NominasDbContext db)
     {
+
         _db = db;
+
     }
 
     /// <summary>Asistencias capturadas entre dos fechas (inclusive).</summary>
     public List<Asistencia> ListarPorPeriodo(DateOnly desde, DateOnly hasta)
     {
-        return _db.Asistencias
-            .Where(a => a.Fecha >= desde && a.Fecha <= hasta)
-            .ToList();
+
+        return _db.Asistencias.Where(a => a.Fecha >= desde && a.Fecha <= hasta).ToList();
+
     }
 
     /// <summary>

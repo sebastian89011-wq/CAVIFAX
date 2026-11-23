@@ -335,11 +335,108 @@ public class NominaService
         }
     }
 
-    // ---------------------------------------------------------------- Los escribe el alumno
 
-    public void Autorizar(int idNomina, int idUsuario)
-        => throw new NotImplementedException("Lo escribe el alumno");
 
+    public void Autorizar(int idNomina, int idUsuario, decimal efectivoRecibido)
+    {
+
+
+        var nomina = _db.Nominas.Find(idNomina);
+       if (nomina == null)
+        {
+            throw new ValidacionException("La nomina no existe");
+        }
+
+        if (nomina.Estatus != EstatusNomina.Borrador)
+            throw new ValidacionException("Solo se puede autorizar una nómina en borrador.");
+
+        nomina.Estatus = EstatusNomina.Autorizada;
+        nomina.FechaAutorizacion = DateTime.Now;
+        nomina.EfectivoRecibido = efectivoRecibido;
+        nomina.IdUsuarioAutoriza = idUsuario;
+         
+        var pagos = _db.PagosEmpleado.Where(p => p.IdNomina == idNomina).ToList();
+
+        foreach (var pago in pagos)
+        {
+            if (pago.TotalDescuentos <= 0)
+                continue;
+
+            var prestamo = _db.Prestamos.FirstOrDefault(p => p.IdEmpleado == pago.IdEmpleado && p.Estatus == EstatusPrestamo.Activo);
+
+            if (prestamo == null)
+            {
+                throw new ValidacionException("El empleado tiene un descuento pero no tiene un préstamo activo.");
+            }
+            _db.AbonosPrestamo.Add(new AbonoPrestamo
+            {
+                IdPrestamo = prestamo.IdPrestamo,
+                IdNomina = pago.IdNomina,
+                MontoAbonado = pago.TotalDescuentos,
+                Fecha = DateOnly.FromDateTime(DateTime.Today)
+            });
+
+            prestamo.SaldoPendiente -= pago.TotalDescuentos;
+
+            if (prestamo.SaldoPendiente <= 0)
+            {
+                prestamo.Estatus = EstatusPrestamo.Liquidado;
+            }
+
+        }
+
+
+        
+
+        
+
+
+        _db.SaveChanges();
+    }
+
+
+    /// <summary>
+    /// Entrega un pago pendiente en la semana de la nómina indicada (RN-13).
+    /// Si era el último pendiente de su nómina, esa nómina pasa a Pagada (pregunta 9).
+    /// </summary>
     public void MarcarPagoEntregado(int idPagoEmpleado, int idNominaEntrega)
-        => throw new NotImplementedException("Lo escribe el alumno");
+    {
+        var pago = _db.PagosEmpleado.Find(idPagoEmpleado);
+        if (pago == null)
+        {
+            throw new ValidacionException("El pago no existe.");
+        }
+
+        if (pago.Estatus == EstatusPago.Entregado)
+        {
+            throw new ValidacionException("Este pago ya fue entregado.");
+        }
+
+        var nominaDelPago = _db.Nominas.Find(pago.IdNomina);
+        if (nominaDelPago == null || nominaDelPago.Estatus == EstatusNomina.Borrador)
+        {
+            throw new ValidacionException("No se puede entregar un pago de una nómina sin autorizar.");
+        }
+
+        var nominaEntrega = _db.Nominas.Find(idNominaEntrega);
+        if (nominaEntrega == null)
+        {
+            throw new ValidacionException("La nómina de entrega no existe.");
+        }
+
+        pago.Estatus = EstatusPago.Entregado;
+        pago.FechaPago = DateOnly.FromDateTime(DateTime.Today);
+        pago.IdNominaPago = idNominaEntrega;
+
+        // La consulta va a la BD, que todavía no ve el cambio de arriba: se excluye este pago
+        bool quedanPendientes = _db.PagosEmpleado.Any(p => p.IdNomina == pago.IdNomina
+                                                            && p.IdPagoEmpleado != pago.IdPagoEmpleado
+                                                            && p.Estatus == EstatusPago.Pendiente);
+        if (!quedanPendientes)
+        {
+            nominaDelPago.Estatus = EstatusNomina.Pagada;
+        }
+
+        _db.SaveChanges();
+    }
 }

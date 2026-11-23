@@ -68,8 +68,8 @@ namespace Nominas.Web.Pages.NominaSemanal
                 return CargarDatos(id) ? Page() : NotFound();
             }
 
-            // TODO: Autorizar todavía no recibe EfectivoRecibido; el valor del formulario no se guarda.
-            return Ejecutar(id, () => _nominaService.Autorizar(id, idUsuario.Value));
+         
+            return Ejecutar(id, () => _nominaService.Autorizar(id, idUsuario.Value,EfectivoRecibido));
         }
 
         // Botón "Marcar entregado" de cada pago (asp-page-handler="Entregar").
