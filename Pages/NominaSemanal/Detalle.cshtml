@@ -30,9 +30,15 @@
 {
     <div class="alert alert-warning">
         <strong>Borrador.</strong> Revisa los montos. Al autorizar, la nómina ya no se puede modificar (RN-09).
-        <form method="post" asp-page-handler="Recalcular" asp-route-id="@n.IdNomina" class="mt-2">
-            <button type="submit" class="btn btn-sm btn-outline-dark">Recalcular con las asistencias actuales</button>
-        </form>
+        <div class="mt-2">
+            <form method="post" asp-page-handler="Recalcular" asp-route-id="@n.IdNomina" class="d-inline">
+                <button type="submit" class="btn btn-sm btn-outline-dark">Recalcular con las asistencias actuales</button>
+            </form>
+            <form method="post" asp-page-handler="Eliminar" asp-route-id="@n.IdNomina" class="d-inline">
+                <button type="submit" class="btn btn-sm btn-outline-danger"
+                        onclick="return confirm('¿Seguro que deseas eliminarlo?');">Eliminar borrador</button>
+            </form>
+        </div>
     </div>
 }
 

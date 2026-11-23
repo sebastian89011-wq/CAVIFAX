@@ -63,5 +63,19 @@ public class PuestoService
         _db.SaveChanges();
     }
 
+    // RN-16: solo se borra si nadie lo usa; si no, se conserva
+    public void Eliminar(int id)
+    {
+        var puesto = _db.Puestos.Find(id);
+        if (puesto == null)
+            throw new ValidacionException("El puesto no existe.");
+
+        if (_db.Empleados.Any(e => e.IdPuesto == id))
+            throw new ValidacionException("No se puede eliminar: hay empleados con este puesto.");
+
+        _db.Puestos.Remove(puesto);
+        _db.SaveChanges();
+    }
+
 
 }

@@ -20,6 +20,22 @@ namespace Nominas.Web.Pages.Puestos
         {
             Puestos = _puestoService.Listar();
         }
-          
+
+        // Botón "Eliminar" de cada fila (asp-page-handler="Eliminar")
+        public IActionResult OnPostEliminar(int id)
+        {
+            try
+            {
+                _puestoService.Eliminar(id);
+                return RedirectToPage("Index");
+            }
+            catch (ValidacionException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                Puestos = _puestoService.Listar();
+                return Page();
+            }
+        }
+
     }
 }

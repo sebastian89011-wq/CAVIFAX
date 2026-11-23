@@ -6,6 +6,7 @@
 
 <h1>Puestos</h1>
 <a asp-page="Crear" class="btn btn-primary mb-3">+ Nuevo puesto</a>
+<div asp-validation-summary="All" class="text-danger"></div>
 <table class="table table-striped">
     <thead><tr><th>Nombre</th><th>Descripción</th><th></th></tr></thead>
     <tbody>
@@ -14,7 +15,13 @@
             <tr>
                 <td>@p.Nombre</td>
                 <td>@p.Descripcion</td>
-                <td><a asp-page="Editar" asp-route-id="@p.IdPuesto" class="btn btn-sm btn-outline-primary">Editar</a></td>
+                <td>
+                    <a asp-page="Editar" asp-route-id="@p.IdPuesto" class="btn btn-sm btn-outline-primary">Editar</a>
+                    <form method="post" asp-page-handler="Eliminar" asp-route-id="@p.IdPuesto" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-outline-danger"
+                                onclick="return confirm('¿Seguro que deseas eliminarlo?');">Eliminar</button>
+                    </form>
+                </td>
             </tr>
         }
     </tbody>

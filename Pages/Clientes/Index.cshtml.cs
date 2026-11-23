@@ -19,5 +19,21 @@ namespace Nominas.Web.Pages.Clientes
         {
             Clientes = _clienteService.Listar();
         }
+
+        // Botón "Eliminar" de cada fila (asp-page-handler="Eliminar")
+        public IActionResult OnPostEliminar(int id)
+        {
+            try
+            {
+                _clienteService.Eliminar(id);
+                return RedirectToPage("Index");
+            }
+            catch (ValidacionException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                Clientes = _clienteService.Listar();
+                return Page();
+            }
+        }
     }
 }

@@ -42,6 +42,21 @@ namespace Nominas.Web.Pages.NominaSemanal
             return Ejecutar(id, () => _nominaService.Recalcular(id));
         }
 
+        // Botón "Eliminar borrador" (asp-page-handler="Eliminar"), solo en borrador
+        public IActionResult OnPostEliminar(int id)
+        {
+            try
+            {
+                _nominaService.EliminarBorrador(id);
+                return RedirectToPage("Index");
+            }
+            catch (ValidacionException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return CargarDatos(id) ? Page() : NotFound();
+            }
+        }
+
         // Botón "Autorizar nómina" (asp-page-handler="Autorizar")
         public IActionResult OnPostAutorizar(int id)
         {

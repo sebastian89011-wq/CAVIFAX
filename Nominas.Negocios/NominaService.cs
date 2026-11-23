@@ -181,6 +181,35 @@ public class NominaService
     }
 
     /// <summary>
+    /// Borra un borrador con sus detalles y pagos. Las nóminas autorizadas o pagadas no se borran (RN-16).
+    /// </summary>
+    public void EliminarBorrador(int idNomina)
+    {
+        var nomina = _db.Nominas.Find(idNomina);
+        if (nomina == null)
+            throw new ValidacionException("La nómina no existe.");
+
+        if (nomina.Estatus != EstatusNomina.Borrador)
+            throw new ValidacionException("No se puede eliminar: solo se eliminan nóminas en borrador.");
+
+        // Un pago de otra semana pudo haberse entregado en esta nómina (IdNominaPago)
+        if (_db.PagosEmpleado.Any(p => p.IdNominaPago == idNomina && p.IdNomina != idNomina))
+            throw new ValidacionException("No se puede eliminar: en esta semana se entregaron pagos de semanas anteriores.");
+
+        // EF no conoce la relación (no hay propiedades de navegación), así que no sabe
+        // que debe borrar primero los hijos. Se guardan en dos pasos, dentro de una transacción.
+        using var transaccion = _db.Database.BeginTransaction();
+
+        _db.DetallesNomina.RemoveRange(_db.DetallesNomina.Where(d => d.IdNomina == idNomina));
+        _db.PagosEmpleado.RemoveRange(_db.PagosEmpleado.Where(p => p.IdNomina == idNomina));
+        _db.SaveChanges();
+
+        _db.Nominas.Remove(nomina);
+        _db.SaveChanges();
+        transaccion.Commit();
+    }
+
+    /// <summary>
     /// El cálculo compartido por GenerarBorrador y Recalcular. Agrega al contexto
     /// (sin guardar) los DetalleNomina y PagoEmpleado de la nómina. Devuelve cuántos detalles creó.
     /// </summary>

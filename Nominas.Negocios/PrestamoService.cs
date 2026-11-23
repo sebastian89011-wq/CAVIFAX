@@ -67,6 +67,20 @@ public class PrestamoService
         _db.SaveChanges();
     }
 
+    // RN-16: un préstamo se cancela (se borra) solo si todavía no tiene abonos
+    public void Cancelar(int id)
+    {
+        var prestamo = _db.Prestamos.Find(id);
+        if (prestamo == null)
+            throw new ValidacionException("El préstamo no existe.");
+
+        if (_db.AbonosPrestamo.Any(a => a.IdPrestamo == id))
+            throw new ValidacionException("No se puede cancelar: el préstamo ya tiene abonos.");
+
+        _db.Prestamos.Remove(prestamo);
+        _db.SaveChanges();
+    }
+
     private void ValidarDatos(Prestamo prestamo)
     {
         var empleado = _db.Empleados.Find(prestamo.IdEmpleado);

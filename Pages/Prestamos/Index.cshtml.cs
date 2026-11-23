@@ -20,6 +20,27 @@ namespace Nominas.Web.Pages.Prestamos
 
         public void OnGet()
         {
+            CargarDatos();
+        }
+
+        // Botón "Cancelar préstamo" de cada fila (asp-page-handler="Eliminar")
+        public IActionResult OnPostEliminar(int id)
+        {
+            try
+            {
+                _prestamoService.Cancelar(id);
+                return RedirectToPage("Index");
+            }
+            catch (ValidacionException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                CargarDatos();
+                return Page();
+            }
+        }
+
+        private void CargarDatos()
+        {
             Prestamos = _prestamoService.Listar();
             _empleados = _empleadoService.Listar();
         }

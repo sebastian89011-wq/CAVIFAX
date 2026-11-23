@@ -42,6 +42,20 @@ public class ClienteService
         _db.SaveChanges();
     }
 
+    // RN-16: solo se borra si no tiene obras
+    public void Eliminar(int id)
+    {
+        var cliente = _db.Clientes.Find(id);
+        if (cliente == null)
+            throw new ValidacionException("El cliente no existe.");
+
+        if (_db.Obras.Any(o => o.IdCliente == id))
+            throw new ValidacionException("No se puede eliminar: el cliente tiene obras registradas.");
+
+        _db.Clientes.Remove(cliente);
+        _db.SaveChanges();
+    }
+
     // Longitudes de la tabla cliente: nombre VARCHAR(100), domicilio VARCHAR(200), ambos NOT NULL
     private void ValidarDatos(Cliente cliente)
     {
