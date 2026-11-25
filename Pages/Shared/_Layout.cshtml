@@ -33,6 +33,9 @@
                 <a class="navbar-brand" asp-page="/Index">
                     <img src="~/img/logo-cavi.png" alt="CAVI Edificaciones" class="logo-cavi" />
                 </a>
+                @* El menú solo se muestra con sesión iniciada; en el login no tendría a dónde llevar *@
+                @if (User.Identity?.IsAuthenticated == true)
+                {
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
                         aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Abrir menú">
                     <span class="navbar-toggler-icon"></span>
@@ -48,7 +51,26 @@
                         <li class="nav-item"><a class="nav-link @Activo("/Clientes/")" asp-page="/Clientes/Index">Clientes</a></li>
                         <li class="nav-item"><a class="nav-link @Activo("/Puestos/")" asp-page="/Puestos/Index">Puestos</a></li>
                     </ul>
+
+                    @* Usuario que inició sesión *@
+                    <div class="dropdown ms-lg-3 mt-2 mt-lg-0">
+                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                            @Nominas.Web.Pages.Cuenta.Sesion.NombreCompleto(User)
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><span class="dropdown-item-text small text-muted">Usuario: @User.Identity!.Name</span></li>
+                            <li><a class="dropdown-item" asp-page="/Cuenta/CambiarContrasena">Cambiar contraseña</a></li>
+                            <li><hr class="dropdown-divider" /></li>
+                            <li>
+                                <form method="post" asp-page="/Cuenta/Salir">
+                                    <button type="submit" class="dropdown-item">Cerrar sesión</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
+                }
             </div>
         </nav>
     </header>
