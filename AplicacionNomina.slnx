@@ -2,6 +2,7 @@
   <Project Path="Nominas.Datos/Nominas.Datos.csproj" />
   <Project Path="Nominas.Entidades/Nominas.Entidades.csproj" />
   <Project Path="Nominas.Negocios/Nominas.Negocios.csproj" />
+  <Project Path="Nominas.Pruebas/Nominas.Pruebas.csproj" />
   <Project Path="Nominas.Web.csproj" />
 </Solution>
 

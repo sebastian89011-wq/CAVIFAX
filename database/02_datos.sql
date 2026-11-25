@@ -18,8 +18,10 @@ INSERT INTO EMPLEADO (id_puesto, nombre, apellido_paterno, apellido_materno, tel
 (3, 'Jorge', 'Castro', 'Díaz', '6467778899', 'Calle Riveroll 712, Ensenada', 'CADJ870411HBCRCS07', '12345678907', 'CSDZJR87041102H700', TRUE, NULL, 'permanente', '2023-05-12', 480.00, 80.00, 'baja_temporal');
 
 -- Usuario (Solo Ingeniero Roberto Mendoza)
+-- Cuenta de prueba para iniciar sesión: usuario rmendoza, contraseña Cavifax2026!
+-- El hash es PBKDF2-SHA256 (UsuarioService.HashContrasena); cámbiala desde la app en "Cambiar contraseña".
 INSERT INTO USUARIO (id_empleado, nombre_usuario, contrasena_hash, activo) VALUES
-(1, 'rmendoza', '$2a$12$KIX9v8ExampleHashBcryptParaIngeniero123456', TRUE);
+(1, 'rmendoza', 'PBKDF2-SHA256$100000$fr3bNweK0z43NkRfh74XmA==$PAz2Gg6IdTSYUrycgL1mlOpfwSXujz6i/FimA7QvGM0=', TRUE);
 
 -- Clientes
 INSERT INTO CLIENTE (nombre, domicilio) VALUES

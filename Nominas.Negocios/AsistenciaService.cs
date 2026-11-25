@@ -1,4 +1,5 @@
-﻿using Nominas.Datos;
+﻿using Microsoft.EntityFrameworkCore;
+using Nominas.Datos;
 using Nominas.Entidades;
 
 namespace Nominas.Negocios;
@@ -79,7 +80,17 @@ public class AsistenciaService
             throw new ValidacionException(string.Join("\n", errores));
         }
 
-        _db.SaveChanges();
+        try
+        {
+            _db.SaveChanges();
+        }
+        catch (DbUpdateException ex)
+        {
+            // Última línea de defensa: si un trigger o una restricción de MySQL rechaza el cambio,
+            // se muestra su mensaje en la página en lugar de un error 500.
+            throw new ValidacionException("La base de datos rechazó las asistencias: "
+                                          + (ex.InnerException?.Message ?? ex.Message));
+        }
     }
 
     private List<string> ValidarCelda(Asistencia registro, Dictionary<int, Empleado> empleados, Dictionary<int, Obra> obras)
@@ -139,7 +150,14 @@ public class AsistenciaService
         {
             errores.Add($"la obra {obra.Nombre} empieza el {obra.FechaInicio:dd/MM/yyyy}.");
         }
-        if (obra.FechaFinReal != null && registro.Fecha > obra.FechaFinReal)
+        // Misma regla que el trigger trg_validar_asistencia_before_insert: la fecha no puede pasar
+        // de la fecha de fin programada. Si la obra se alargó, primero se edita esa fecha en Obras.
+        if (registro.Fecha > obra.FechaFinProgramada)
+        {
+            errores.Add($"la obra {obra.Nombre} tiene programado terminar el {obra.FechaFinProgramada:dd/MM/yyyy}; "
+                        + "si se alargó, actualiza su fecha de fin programada en Obras.");
+        }
+        else if (obra.FechaFinReal != null && registro.Fecha > obra.FechaFinReal)
         {
             errores.Add($"la obra {obra.Nombre} terminó el {obra.FechaFinReal:dd/MM/yyyy}.");
         }

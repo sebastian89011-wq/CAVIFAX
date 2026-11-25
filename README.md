@@ -80,6 +80,28 @@ dotnet run --project Nominas.Web.csproj
 Abrir `http://localhost:5249` (o el puerto que indique la consola). En Visual Studio basta con
 seleccionar el perfil `http` o `https` y presionar F5.
 
+### 4. Iniciar sesión
+
+Todas las páginas piden sesión. La cuenta de prueba que crea `02_datos.sql` es la del responsable
+(`rmendoza`); su contraseña está en el comentario de ese script. Después de entrar se puede cambiar
+desde el menú del usuario → *Cambiar contraseña*. Las contraseñas se guardan como hash PBKDF2-SHA256
+con sal (`UsuarioService`), nunca en texto.
+
+## Pruebas
+
+```powershell
+.\probar.ps1            # pruebas unitarias + prueba de humo contra la base real
+.\probar.ps1 -SinHumo   # solo pruebas unitarias (no necesita MySQL)
+```
+
+- **Pruebas unitarias** (`Nominas.Pruebas/`, xUnit): 79 pruebas de las reglas de negocio y del ciclo
+  completo de la nómina. Cada prueba usa su propia base SQLite en memoria con el mismo modelo de
+  `NominasDbContext`, así que nunca tocan MySQL. También se pueden correr con `dotnet test`.
+- **Prueba de humo:** compila la aplicación en una carpeta temporal, la levanta en el puerto 5199
+  contra `constructora_nominas` y abre cada página (solo GET, no modifica datos).
+
+El script termina con código 0 si todo pasa y 1 si algo falla.
+
 ## Módulos
 
 | Módulo | Qué hace |

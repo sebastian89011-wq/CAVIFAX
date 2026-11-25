@@ -1,0 +1,45 @@
+@page
+@model Nominas.Web.Pages.Cuenta.CambiarContrasenaModel
+@{
+    ViewData["Title"] = "Cambiar contraseña";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card">
+            <div class="card-body p-4">
+                <h1 class="h3 mb-4">Cambiar contraseña</h1>
+
+                <form method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Actual" class="form-label"></label>
+                        <input asp-for="Actual" class="form-control" autocomplete="current-password" />
+                        <span asp-validation-for="Actual" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Nueva" class="form-label"></label>
+                        <input asp-for="Nueva" class="form-control" autocomplete="new-password" />
+                        <div class="form-text">Al menos @Nominas.Negocios.UsuarioService.LongitudMinima caracteres.</div>
+                        <span asp-validation-for="Nueva" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Confirmacion" class="form-label"></label>
+                        <input asp-for="Confirmacion" class="form-control" autocomplete="new-password" />
+                        <span asp-validation-for="Confirmacion" class="text-danger small"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <a asp-page="/Index" class="btn btn-secondary">Cancelar</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

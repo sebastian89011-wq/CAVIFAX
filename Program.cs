@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Nominas.Datos;
 using Nominas.Negocios;
@@ -14,9 +15,29 @@ builder.Services.AddScoped<ObraService>();
 builder.Services.AddScoped<PrestamoService>();
 builder.Services.AddScoped<AsistenciaService>();
 builder.Services.AddScoped<NominaService>();
+builder.Services.AddScoped<UsuarioService>();
 
-// Add services to the container.
-builder.Services.AddRazorPages();
+// Inicio de sesión con cookie (RN-15): al entrar, el servidor manda una cookie cifrada
+// con los datos del usuario; el navegador la regresa en cada petición.
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Cuenta/Login";          // a dónde mandar a quien no ha entrado
+        options.LogoutPath = "/Cuenta/Salir";
+        options.ExpireTimeSpan = TimeSpan.FromHours(8);
+        options.SlidingExpiration = true;              // se renueva mientras se use
+        options.Cookie.Name = "CAVIFAX.Sesion";
+        options.Cookie.HttpOnly = true;                // JavaScript no puede leerla
+        options.Cookie.SameSite = SameSiteMode.Lax;
+    });
+
+// Todas las páginas piden sesión, menos el login y la página de error.
+builder.Services.AddRazorPages(options =>
+{
+    options.Conventions.AuthorizeFolder("/");
+    options.Conventions.AllowAnonymousToPage("/Cuenta/Login");
+    options.Conventions.AllowAnonymousToPage("/Error");
+});
 
 var app = builder.Build();
 
@@ -32,6 +53,8 @@ app.UseHttpsRedirection();
 
 app.UseRouting();
 
+// Primero se identifica al usuario (lee la cookie) y después se revisa si puede entrar
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();

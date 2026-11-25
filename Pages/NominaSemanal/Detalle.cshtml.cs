@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Nominas.Entidades;
 using Nominas.Negocios;
+using Nominas.Web.Pages.Cuenta;
 
 namespace Nominas.Web.Pages.NominaSemanal
 {
@@ -61,11 +62,11 @@ namespace Nominas.Web.Pages.NominaSemanal
         // Botón "Autorizar nómina" (asp-page-handler="Autorizar")
         public IActionResult OnPostAutorizar(int id)
         {
-            // TODO: usar el usuario de la sesión
-            int? idUsuario = _nominaService.PrimerUsuarioActivo();
+            // Quien autoriza es el usuario que inició sesión (queda en nomina.id_usuario_autoriza)
+            int? idUsuario = User.IdUsuario();
             if (idUsuario == null)
             {
-                ModelState.AddModelError(string.Empty, "No hay ningún usuario activo para autorizar la nómina.");
+                ModelState.AddModelError(string.Empty, "Inicia sesión para autorizar la nómina.");
                 return CargarDatos(id) ? Page() : NotFound();
             }
 
