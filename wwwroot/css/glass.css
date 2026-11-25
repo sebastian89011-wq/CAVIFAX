@@ -1,0 +1,716 @@
+/* =========================================================
+   CAVIFAX · Material "Liquid Glass"
+   Se carga DESPUÉS de bootstrap.css, site.css y los estilos aislados.
+   Solo cambia la presentación: no toca el HTML ni el JavaScript.
+
+   Todos los colores salen de la paleta de site.css (--cavi-*) o de los
+   colores semánticos de Bootstrap que ya usaba la página. Para más o menos
+   transparencia, ajustar --glass y --blur (sección 1).
+   ========================================================= */
+
+/* ---------- 1. Tokens · tema claro ---------- */
+:root {
+  color-scheme: light;
+
+  /* Paleta detectada (site.css + Bootstrap 5.3) */
+  --accent: var(--cavi-azul);              /* #010066: marca, títulos, enlaces */
+  --accent-fill: var(--cavi-azul);         /* relleno del botón principal */
+  --accent-fill-hover: var(--cavi-azul-oscuro);
+  --bg: var(--cavi-fondo);                 /* #f3f4f7 */
+  --surface-base: #ffffff;                 /* --bs-body-bg: tarjetas, tablas, inputs */
+  --text: #212529;                         /* --bs-body-color */
+  --text-muted: var(--cavi-gris-oscuro);   /* #666666 */
+  --heading: var(--cavi-azul);
+  --link: var(--cavi-azul);
+  --line: var(--cavi-gris);                /* #999999 */
+  --line-soft: var(--cavi-gris-claro);     /* #e3e5ec */
+
+  --success: #198754;                      /* semánticos de Bootstrap ya usados */
+  --warning: #ffc107;
+  --danger: #dc3545;
+  --info: #0dcaf0;
+
+  /* Texto sobre fondos semánticos translúcidos (mismo tono, más oscuro) */
+  --on-success: color-mix(in srgb, var(--success) 78%, black);
+  --on-warning: color-mix(in srgb, var(--warning) 45%, black);
+  --on-danger:  color-mix(in srgb, var(--danger) 82%, black);
+  --on-info:    color-mix(in srgb, var(--info) 45%, black);
+  --on-accent:  var(--accent);
+  --on-neutral: var(--text-muted);
+
+  /* Fondos de estado: color semántico al ~15 % */
+  --tint-success: color-mix(in srgb, var(--success) 15%, transparent);
+  --tint-warning: color-mix(in srgb, var(--warning) 22%, transparent);
+  --tint-danger:  color-mix(in srgb, var(--danger) 14%, transparent);
+  --tint-info:    color-mix(in srgb, var(--info) 15%, transparent);
+  --tint-accent:  color-mix(in srgb, var(--accent) 12%, transparent);
+  --tint-neutral: color-mix(in srgb, var(--line) 18%, transparent);
+
+  /* Vidrio */
+  --glass:        color-mix(in srgb, var(--surface-base) 56%, transparent);
+  --glass-strong: color-mix(in srgb, var(--surface-base) 80%, transparent);
+  --glass-solid:  color-mix(in srgb, var(--surface-base) 92%, var(--bg));
+  --glass-border: color-mix(in srgb, var(--surface-base) 70%, transparent);
+  --glass-edge:   color-mix(in srgb, var(--surface-base) 95%, transparent);
+  --glass-rim:    color-mix(in srgb, var(--surface-base) 100%, transparent);
+  --glass-shadow: 0 18px 48px color-mix(in srgb, var(--accent) 12%, transparent),
+                  0 2px 8px color-mix(in srgb, var(--accent) 7%, transparent);
+  --blur: blur(30px) saturate(180%);
+
+  --surface:   color-mix(in srgb, var(--surface-base) 62%, transparent);  /* botones e inputs */
+  --surface-2: color-mix(in srgb, var(--line-soft) 48%, transparent);     /* pozos: tablas, barras */
+  --hairline:        color-mix(in srgb, var(--line) 30%, transparent);
+  --hairline-strong: color-mix(in srgb, var(--line) 55%, transparent);
+  --well-shadow: inset 0 1px 3px color-mix(in srgb, var(--accent) 8%, transparent);
+
+  --gloss:      color-mix(in srgb, white 24%, transparent);   /* brillo superior del botón */
+  --gloss-edge: color-mix(in srgb, white 35%, transparent);
+  --focus: var(--accent);
+
+  /* Fondo de escritorio (manchas de la paleta) */
+  --wall-1: color-mix(in srgb, var(--cavi-azul) 26%, transparent);
+  --wall-2: color-mix(in srgb, var(--cavi-gris) 30%, transparent);
+  --wall-3: color-mix(in srgb, var(--cavi-azul-oscuro) 20%, transparent);
+  --wall-4: color-mix(in srgb, var(--cavi-gris-claro) 90%, transparent);
+
+  --radius-panel: 22px;
+  --radius-inner: 14px;
+  --radius-pill: 999px;
+
+  --select-arrow: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23666666' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+  --icon-filter: none;
+  --brand-plate: transparent;                                   /* fondo detrás del logo */
+  --on-accent-fill: white;                                      /* texto del botón principal */
+}
+
+/* ---------- 2. Tokens · tema oscuro (mismos tonos, reajustados) ---------- */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    --accent: color-mix(in srgb, var(--cavi-azul) 35%, white);       /* azul CAVI aclarado */
+    --accent-fill: color-mix(in srgb, var(--cavi-azul) 70%, white);
+    --accent-fill-hover: color-mix(in srgb, var(--cavi-azul) 80%, white);
+    --bg: color-mix(in srgb, var(--cavi-azul-oscuro) 42%, black);     /* azul CAVI muy oscuro */
+    --surface-base: color-mix(in srgb, var(--cavi-azul) 55%, var(--cavi-gris-oscuro));
+    --text: var(--cavi-gris-claro);
+    --text-muted: color-mix(in srgb, var(--cavi-gris) 60%, var(--cavi-gris-claro));
+    --heading: var(--accent);
+    --link: var(--accent);
+    --line: var(--cavi-gris);
+    --line-soft: var(--cavi-gris-oscuro);
+
+    --on-success: color-mix(in srgb, var(--success) 55%, white);
+    --on-warning: color-mix(in srgb, var(--warning) 75%, white);
+    --on-danger:  color-mix(in srgb, var(--danger) 55%, white);
+    --on-info:    color-mix(in srgb, var(--info) 70%, white);
+    --tint-success: color-mix(in srgb, var(--success) 22%, transparent);
+    --tint-warning: color-mix(in srgb, var(--warning) 16%, transparent);
+    --tint-danger:  color-mix(in srgb, var(--danger) 20%, transparent);
+    --tint-accent:  color-mix(in srgb, var(--accent) 16%, transparent);
+    --tint-neutral: color-mix(in srgb, var(--line) 20%, transparent);
+
+    --glass:        color-mix(in srgb, var(--surface-base) 45%, transparent);
+    --glass-strong: color-mix(in srgb, var(--surface-base) 72%, transparent);
+    --glass-solid:  color-mix(in srgb, var(--surface-base) 60%, var(--bg));
+    --glass-border: color-mix(in srgb, var(--cavi-gris-claro) 14%, transparent);
+    --glass-edge:   color-mix(in srgb, var(--cavi-gris-claro) 18%, transparent);
+    --glass-rim:    color-mix(in srgb, var(--cavi-gris-claro) 38%, transparent);
+    --glass-shadow: 0 18px 48px color-mix(in srgb, black 45%, transparent),
+                    0 2px 8px color-mix(in srgb, black 30%, transparent);
+
+    --surface:   color-mix(in srgb, var(--surface-base) 55%, transparent);
+    --surface-2: color-mix(in srgb, var(--bg) 45%, transparent);
+    --hairline:        color-mix(in srgb, var(--cavi-gris-claro) 14%, transparent);
+    --hairline-strong: color-mix(in srgb, var(--cavi-gris-claro) 26%, transparent);
+    --well-shadow: inset 0 1px 3px color-mix(in srgb, black 35%, transparent);
+
+    --gloss:      color-mix(in srgb, white 16%, transparent);
+    --gloss-edge: color-mix(in srgb, white 22%, transparent);
+    --focus: var(--accent);
+
+    --wall-1: color-mix(in srgb, var(--cavi-azul) 70%, transparent);
+    --wall-2: color-mix(in srgb, var(--cavi-gris-oscuro) 30%, transparent);
+    --wall-3: color-mix(in srgb, var(--accent-fill) 30%, transparent);
+    --wall-4: color-mix(in srgb, var(--cavi-azul-oscuro) 60%, transparent);
+
+    --select-arrow: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23e3e5ec' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+    --icon-filter: invert(1) grayscale(1) brightness(1.6);
+    --brand-plate: color-mix(in srgb, var(--cavi-gris-claro) 92%, transparent);
+
+    /* Bootstrap lee estas variables en sus componentes */
+    --bs-body-color: var(--text);
+    --bs-emphasis-color: var(--text);
+    --bs-secondary-color: var(--text-muted);
+    --bs-border-color: var(--hairline-strong);
+    --bs-heading-color: var(--heading);
+  }
+}
+
+/* Mismo tema oscuro si se fuerza con data-theme="dark" */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --accent: color-mix(in srgb, var(--cavi-azul) 35%, white);
+  --accent-fill: color-mix(in srgb, var(--cavi-azul) 70%, white);
+  --accent-fill-hover: color-mix(in srgb, var(--cavi-azul) 80%, white);
+  --bg: color-mix(in srgb, var(--cavi-azul-oscuro) 42%, black);
+  --surface-base: color-mix(in srgb, var(--cavi-azul) 55%, var(--cavi-gris-oscuro));
+  --text: var(--cavi-gris-claro);
+  --text-muted: color-mix(in srgb, var(--cavi-gris) 60%, var(--cavi-gris-claro));
+  --heading: var(--accent);
+  --link: var(--accent);
+  --line: var(--cavi-gris);
+  --line-soft: var(--cavi-gris-oscuro);
+  --on-success: color-mix(in srgb, var(--success) 55%, white);
+  --on-warning: color-mix(in srgb, var(--warning) 75%, white);
+  --on-danger:  color-mix(in srgb, var(--danger) 55%, white);
+  --on-info:    color-mix(in srgb, var(--info) 70%, white);
+  --tint-success: color-mix(in srgb, var(--success) 22%, transparent);
+  --tint-warning: color-mix(in srgb, var(--warning) 16%, transparent);
+  --tint-danger:  color-mix(in srgb, var(--danger) 20%, transparent);
+  --tint-accent:  color-mix(in srgb, var(--accent) 16%, transparent);
+  --tint-neutral: color-mix(in srgb, var(--line) 20%, transparent);
+  --glass:        color-mix(in srgb, var(--surface-base) 45%, transparent);
+  --glass-strong: color-mix(in srgb, var(--surface-base) 72%, transparent);
+  --glass-solid:  color-mix(in srgb, var(--surface-base) 60%, var(--bg));
+  --glass-border: color-mix(in srgb, var(--cavi-gris-claro) 14%, transparent);
+  --glass-edge:   color-mix(in srgb, var(--cavi-gris-claro) 18%, transparent);
+  --glass-rim:    color-mix(in srgb, var(--cavi-gris-claro) 38%, transparent);
+  --glass-shadow: 0 18px 48px color-mix(in srgb, black 45%, transparent),
+                  0 2px 8px color-mix(in srgb, black 30%, transparent);
+  --surface:   color-mix(in srgb, var(--surface-base) 55%, transparent);
+  --surface-2: color-mix(in srgb, var(--bg) 45%, transparent);
+  --hairline:        color-mix(in srgb, var(--cavi-gris-claro) 14%, transparent);
+  --hairline-strong: color-mix(in srgb, var(--cavi-gris-claro) 26%, transparent);
+  --well-shadow: inset 0 1px 3px color-mix(in srgb, black 35%, transparent);
+  --gloss:      color-mix(in srgb, white 16%, transparent);
+  --gloss-edge: color-mix(in srgb, white 22%, transparent);
+  --focus: var(--accent);
+  --wall-1: color-mix(in srgb, var(--cavi-azul) 70%, transparent);
+  --wall-2: color-mix(in srgb, var(--cavi-gris-oscuro) 30%, transparent);
+  --wall-3: color-mix(in srgb, var(--accent-fill) 30%, transparent);
+  --wall-4: color-mix(in srgb, var(--cavi-azul-oscuro) 60%, transparent);
+  --select-arrow: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23e3e5ec' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+  --icon-filter: invert(1) grayscale(1) brightness(1.6);
+  --brand-plate: color-mix(in srgb, var(--cavi-gris-claro) 92%, transparent);
+  --bs-body-color: var(--text);
+  --bs-emphasis-color: var(--text);
+  --bs-secondary-color: var(--text-muted);
+  --bs-border-color: var(--hairline-strong);
+  --bs-heading-color: var(--heading);
+}
+
+/* ---------- 3. Fondo de escritorio ---------- */
+body {
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: -10%;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(38% 42% at 14% 16%, var(--wall-1), transparent 70%),
+    radial-gradient(34% 38% at 88% 10%, var(--wall-2), transparent 70%),
+    radial-gradient(42% 44% at 80% 84%, var(--wall-3), transparent 72%),
+    radial-gradient(36% 36% at 18% 86%, var(--wall-4), transparent 70%),
+    var(--bg);
+}
+
+code, pre, kbd {
+  font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+  font-variant-ligatures: none;
+}
+
+/* ---------- 4. Material de vidrio (solo contenedores de primer nivel llevan blur) ---------- */
+.navbar,
+.card,
+.alert,
+main > .table,
+main .table-responsive,
+dialog {
+  background: var(--glass);
+  -webkit-backdrop-filter: var(--blur);
+  backdrop-filter: var(--blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-panel);
+  box-shadow: inset 0 1px 0 var(--glass-edge), var(--glass-shadow);
+}
+
+/* Reflejo del borde: anillo de 1 px con degradado */
+.navbar::before,
+.card::before,
+.alert::before,
+dialog::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, var(--glass-rim), transparent 32%, transparent 68%, var(--glass-rim));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Vidrio dentro de vidrio: sin blur, solo translucidez */
+.card .card,
+.card .alert,
+.card .table-responsive {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background: var(--surface);
+  box-shadow: inset 0 1px 0 var(--glass-edge);
+}
+
+/* ---------- 5. Barra superior flotante ---------- */
+header {
+  position: sticky;
+  top: 12px;
+  z-index: 1030;
+  padding-top: 12px;
+}
+
+.navbar.bg-white {
+  background: var(--glass) !important;
+}
+
+.navbar {
+  width: min(1320px, calc(100% - 24px));
+  margin: 0 auto 1.75rem;
+  border-radius: 24px;
+  border-bottom: 1px solid var(--glass-border);
+  padding: 0.45rem 0.25rem;
+  --bs-navbar-color: var(--text);
+  --bs-navbar-hover-color: var(--heading);
+  --bs-navbar-active-color: var(--heading);
+}
+
+.navbar-brand {
+  background: var(--brand-plate);
+  border-radius: var(--radius-inner);
+  padding: 2px 8px;
+}
+
+.navbar-toggler {
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+}
+
+.navbar-toggler-icon {
+  filter: var(--icon-filter);
+}
+
+/* Navegación como control segmentado */
+.navbar-nav {
+  background: var(--surface-2);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-pill);
+  padding: 4px;
+  gap: 2px;
+  box-shadow: var(--well-shadow);
+}
+
+.navbar .nav-link {
+  border-bottom: 0;
+  border-radius: var(--radius-pill);
+  padding: 0.4rem 0.85rem !important;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.navbar .nav-link:hover {
+  color: var(--heading);
+  background: var(--tint-neutral);
+}
+
+.navbar .nav-link.active {
+  color: var(--heading);
+  background: var(--glass-strong);
+  box-shadow: inset 0 1px 0 var(--glass-edge),
+              0 1px 4px color-mix(in srgb, var(--accent) 16%, transparent);
+}
+
+/* ---------- 6. Tipografía ---------- */
+h1, h2, h3, h4, h5, .h1, .h2, .h3, .h4, .h5 {
+  color: var(--heading);
+  letter-spacing: -0.02em;
+}
+
+h1, .display-4 { font-weight: 700; }
+h2, h3, h4, h5 { font-weight: 600; }
+
+main h4,
+main form > h5 {
+  color: var(--heading);
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: -0.01em;
+  border-bottom: 1px solid var(--hairline-strong);
+}
+
+a:not(.btn):not(.nav-link):not(.navbar-brand) {
+  color: var(--link);
+}
+
+.text-muted, .form-text { color: var(--text-muted) !important; }
+.text-danger { color: var(--on-danger) !important; }
+.text-success { color: var(--on-success) !important; }
+
+/* ---------- 7. Tarjetas ---------- */
+.card {
+  --bs-card-bg: transparent;
+  --bs-card-color: var(--text);
+  --bs-card-cap-bg: transparent;
+  --bs-card-border-color: var(--glass-border);
+  overflow: visible;
+}
+
+.card-header {
+  background: transparent;
+  color: var(--heading);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: -0.01em;
+  border-bottom: 1px solid var(--hairline-strong);
+  border-radius: var(--radius-panel) var(--radius-panel) 0 0 !important;
+}
+
+.row.text-center > [class*="col"] > .card {
+  border-left: 1px solid var(--glass-border);
+  box-shadow: inset 3px 0 0 var(--accent-fill), inset 0 1px 0 var(--glass-edge), var(--glass-shadow);
+}
+
+.card.border-primary {
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent) !important;
+}
+
+.card:has(.stretched-link):hover {
+  box-shadow: inset 0 1px 0 var(--glass-edge),
+              0 22px 56px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+/* ---------- 8. Tablas ---------- */
+.table {
+  --bs-table-bg: transparent;
+  --bs-table-color: var(--text);
+  --bs-table-striped-bg: color-mix(in srgb, var(--accent) 4%, transparent);
+  --bs-table-striped-color: var(--text);
+  --bs-table-hover-bg: var(--tint-accent);
+  --bs-table-border-color: var(--hairline);
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.table > thead > tr > th,
+.table > thead.table-light > tr > th {
+  background-color: var(--tint-accent);
+  color: var(--heading);
+  border-color: var(--hairline);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.table-light {
+  --bs-table-bg: transparent;
+  --bs-table-color: var(--heading);
+  --bs-table-border-color: var(--hairline);
+}
+
+.table-bordered > :not(caption) > * > * {
+  border-color: var(--hairline);
+}
+
+/* Tabla suelta en la página: panel de vidrio */
+main > .table {
+  overflow: hidden;
+}
+
+main > .table > :last-child > tr:last-child > * {
+  border-bottom: 0;
+}
+
+/* Tabla dentro de tarjeta o del panel de asistencias: pozo hundido */
+.card .table,
+main .table-responsive .table {
+  background: var(--surface-2);
+  box-shadow: var(--well-shadow);
+  overflow: hidden;
+  margin-bottom: 0;
+}
+
+.card .table { border-radius: 0 0 var(--radius-panel) var(--radius-panel); }
+
+main .table-responsive {
+  padding: 0;
+  margin-bottom: 1rem;
+}
+
+main .table-responsive .table {
+  background: transparent;
+  box-shadow: none;
+}
+
+/* ---------- 9. Botones ---------- */
+.btn {
+  border-radius: var(--radius-pill);
+  font-weight: 600;
+  transition: transform 0.12s ease, background-color 0.15s, box-shadow 0.15s, color 0.15s;
+}
+
+.btn:active { transform: scale(0.97); }
+
+.btn-primary {
+  --bs-btn-bg: var(--accent-fill);
+  --bs-btn-border-color: var(--accent-fill);
+  --bs-btn-hover-bg: var(--accent-fill-hover);
+  --bs-btn-hover-border-color: var(--accent-fill-hover);
+  --bs-btn-active-bg: var(--accent-fill-hover);
+  --bs-btn-active-border-color: var(--accent-fill-hover);
+  --bs-btn-color: var(--on-accent-fill);
+  --bs-btn-hover-color: var(--on-accent-fill);
+  --bs-btn-active-color: var(--on-accent-fill);
+  background-image: linear-gradient(180deg, var(--gloss), transparent 60%);
+  box-shadow: inset 0 1px 0 var(--gloss-edge),
+              0 6px 18px color-mix(in srgb, var(--accent-fill) 32%, transparent);
+}
+
+.btn-secondary,
+.btn-outline-primary,
+.btn-outline-secondary,
+.btn-outline-success,
+.btn-outline-danger,
+.btn-outline-dark {
+  --bs-btn-bg: var(--surface);
+  --bs-btn-border-color: var(--hairline-strong);
+  --bs-btn-hover-border-color: var(--hairline-strong);
+  --bs-btn-active-border-color: var(--hairline-strong);
+  box-shadow: inset 0 1px 0 var(--glass-edge);
+}
+
+.btn-secondary,
+.btn-outline-secondary,
+.btn-outline-dark {
+  --bs-btn-color: var(--text);
+  --bs-btn-hover-color: var(--text);
+  --bs-btn-active-color: var(--text);
+  --bs-btn-hover-bg: var(--tint-neutral);
+  --bs-btn-active-bg: var(--tint-neutral);
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--on-accent);
+  --bs-btn-hover-color: var(--on-accent);
+  --bs-btn-active-color: var(--on-accent);
+  --bs-btn-hover-bg: var(--tint-accent);
+  --bs-btn-active-bg: var(--tint-accent);
+}
+
+.btn-outline-success {
+  --bs-btn-color: var(--on-success);
+  --bs-btn-hover-color: var(--on-success);
+  --bs-btn-active-color: var(--on-success);
+  --bs-btn-hover-bg: var(--tint-success);
+  --bs-btn-active-bg: var(--tint-success);
+}
+
+.btn-outline-danger {
+  --bs-btn-color: var(--on-danger);
+  --bs-btn-hover-color: var(--on-danger);
+  --bs-btn-active-color: var(--on-danger);
+  --bs-btn-hover-bg: var(--tint-danger);
+  --bs-btn-active-bg: var(--tint-danger);
+}
+
+.btn-warning {
+  background-image: linear-gradient(180deg, var(--gloss), transparent 60%);
+  box-shadow: inset 0 1px 0 var(--gloss-edge),
+              0 6px 18px color-mix(in srgb, var(--warning) 30%, transparent);
+}
+
+.btn-close { filter: var(--icon-filter); }
+
+/* ---------- 10. Campos ---------- */
+.form-control,
+.form-select {
+  border-radius: 10px;
+  background-color: var(--surface);
+  border: 1px solid var(--hairline-strong);
+  color: var(--text);
+  box-shadow: inset 0 1px 2px color-mix(in srgb, var(--accent) 5%, transparent);
+}
+
+.form-select {
+  --bs-form-select-bg-img: var(--select-arrow);
+}
+
+.form-control::placeholder { color: var(--text-muted); opacity: 0.8; }
+
+.form-control:focus,
+.form-select:focus {
+  background-color: var(--glass-strong);
+  color: var(--text);
+  border-color: var(--focus);
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
+  box-shadow: none;
+}
+
+.form-select option { background-color: var(--glass-solid); color: var(--text); }
+
+.input-group-text {
+  background: var(--surface-2);
+  color: var(--text-muted);
+  border: 1px solid var(--hairline-strong);
+  border-radius: 10px;
+}
+
+.form-check-input {
+  background-color: var(--surface);
+  border-color: var(--hairline-strong);
+}
+
+.form-check-input:checked {
+  background-color: var(--accent-fill);
+  border-color: var(--accent-fill);
+}
+
+.form-label { color: var(--text); font-weight: 500; }
+
+/* Foco visible en todo lo interactivo */
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.btn:focus-visible,
+.nav-link:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+/* ---------- 11. Insignias, avisos y barras ---------- */
+.badge {
+  border-radius: var(--radius-pill);
+  font-weight: 600;
+  padding: 0.38em 0.75em;
+}
+
+.badge.bg-success { background-color: var(--tint-success) !important; color: var(--on-success) !important; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--success) 30%, transparent); }
+.badge.bg-warning { background-color: var(--tint-warning) !important; color: var(--on-warning) !important; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--warning) 45%, transparent); }
+.badge.bg-danger  { background-color: var(--tint-danger) !important;  color: var(--on-danger) !important;  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--danger) 30%, transparent); }
+.badge.bg-primary { background-color: var(--tint-accent) !important;  color: var(--on-accent) !important;  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 30%, transparent); }
+.badge.bg-secondary { background-color: var(--tint-neutral) !important; color: var(--on-neutral) !important; box-shadow: inset 0 0 0 1px var(--hairline-strong); }
+
+.alert {
+  border-radius: var(--radius-inner);
+  --bs-alert-color: var(--text);
+}
+
+.alert-success { background: color-mix(in srgb, var(--success) 14%, var(--glass)); border-color: color-mix(in srgb, var(--success) 35%, transparent); color: var(--on-success); }
+.alert-warning { background: color-mix(in srgb, var(--warning) 20%, var(--glass)); border-color: color-mix(in srgb, var(--warning) 45%, transparent); color: var(--on-warning); }
+.alert-danger  { background: color-mix(in srgb, var(--danger) 14%, var(--glass));  border-color: color-mix(in srgb, var(--danger) 35%, transparent);  color: var(--on-danger); }
+
+.progress {
+  --bs-progress-bg: var(--surface-2);
+  --bs-progress-border-radius: var(--radius-pill);
+  box-shadow: var(--well-shadow);
+}
+
+.progress-bar {
+  --bs-progress-bar-bg: var(--accent-fill);
+  background-image: linear-gradient(180deg, var(--gloss), transparent 70%);
+  border-radius: var(--radius-pill);
+}
+
+.progress-bar.bg-danger { background-color: var(--danger) !important; }
+
+/* ---------- 12. Pie y diálogos ---------- */
+.footer {
+  background: transparent;
+  border-top: 1px solid var(--hairline);
+  color: var(--text-muted);
+}
+
+dialog {
+  background: var(--glass-strong);
+  color: var(--text);
+}
+
+dialog::backdrop {
+  background: color-mix(in srgb, var(--bg) 40%, transparent);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+/* ---------- 13. Móvil ---------- */
+@media (max-width: 991.98px) {
+  header { top: 8px; padding-top: 8px; }
+
+  .navbar {
+    width: calc(100% - 16px);
+    border-radius: 20px;
+  }
+
+  .navbar-nav {
+    border-radius: 18px;
+    margin-top: 0.6rem;
+  }
+
+  .navbar .nav-link { border-radius: 12px; }
+}
+
+@media (max-width: 575.98px) {
+  .logo-cavi { height: 34px; }
+
+  /* Las tablas anchas se desplazan dentro de su panel, nunca la página */
+  main > .table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}
+
+html, body { overflow-x: clip; }
+
+/* ---------- 14. Accesibilidad y alternativas ---------- */
+/* Selector repetido para ganarle a los bloques de tema (:root:not(...)) */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root:root:root {
+    --glass: var(--glass-solid);
+    --glass-strong: var(--glass-solid);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :root:root:root {
+    --glass: var(--glass-solid);
+    --glass-strong: var(--glass-solid);
+    --surface: var(--glass-solid);
+    --blur: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .btn:active,
+  .card:has(.stretched-link):hover { transform: none; }
+}
