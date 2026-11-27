@@ -37,7 +37,7 @@ INSERT INTO OBRA (id_cliente, id_responsable, id_supervisor, nombre, ubicacion, 
 -- Préstamos
 INSERT INTO PRESTAMO (id_empleado, tipo, monto, fecha, abono_semanal, saldo_pendiente, estatus) VALUES
 (3, 'prestamo', 3000.00, '2026-11-01', 500.00, 2500.00, 'activo'),
-(5, 'anticipo', 800.00, '2026-11-10', 400.00, 400.00, 'activo');
+(5, 'anticipo', 400.00, '2026-11-10', 400.00, 0.00, 'liquidado');   -- un anticipo se descuenta completo en la siguiente nómina
 
 -- Asistencias (Históricas de Obra 3 + Semana 1 del 2026-11-09 al 2026-11-14)
 INSERT INTO ASISTENCIA (id_empleado, id_obra, fecha, asistio, horas_extra) VALUES

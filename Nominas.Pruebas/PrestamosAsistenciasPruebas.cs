@@ -44,6 +44,62 @@ public class PrestamosAsistenciasPruebas : BaseDatosPrueba
     }
 
     [Fact]
+    public void Anticipo_ElAbonoEsTodoElMonto()
+    {
+        var anticipo = PrestamoNuevo(NuevoEmpleado().IdEmpleado, monto: 1200, abono: 300);
+        anticipo.Tipo = TipoPrestamo.Anticipo;
+
+        Prestamos.Crear(anticipo);
+
+        Assert.Equal(1200m, anticipo.AbonoSemanal);
+        Assert.Equal(1200m, anticipo.SaldoPendiente);
+    }
+
+    [Fact]
+    public void Anticipo_SinAbonoCapturado_SeGuardaConElMonto()
+    {
+        // El formulario no envía el abono de un anticipo
+        var anticipo = PrestamoNuevo(NuevoEmpleado().IdEmpleado, monto: 800, abono: 0);
+        anticipo.Tipo = TipoPrestamo.Anticipo;
+
+        Prestamos.Crear(anticipo);
+
+        Assert.Equal(800m, anticipo.AbonoSemanal);
+    }
+
+    [Fact]
+    public void Anticipo_HastaUnaSemanaDeSueldo_SePermite()
+    {
+        // Sueldo de 500 diarios: una semana (lunes a sábado) son 3,000
+        var anticipo = PrestamoNuevo(NuevoEmpleado(sueldo: 500).IdEmpleado, monto: 3000, abono: 0);
+        anticipo.Tipo = TipoPrestamo.Anticipo;
+
+        Prestamos.Crear(anticipo);
+
+        Assert.Equal(EstatusPrestamo.Activo, anticipo.Estatus);
+    }
+
+    [Fact]
+    public void Anticipo_MayorAUnaSemanaDeSueldo_Falla()
+    {
+        var anticipo = PrestamoNuevo(NuevoEmpleado(sueldo: 500).IdEmpleado, monto: 3000.01m, abono: 0);
+        anticipo.Tipo = TipoPrestamo.Anticipo;
+
+        DebeFallar(() => Prestamos.Crear(anticipo), "semana de sueldo");
+    }
+
+    [Fact]
+    public void Prestamo_NoTieneLimiteDeUnaSemana()
+    {
+        // El límite es solo para anticipos: un préstamo se paga en varias semanas
+        var prestamo = PrestamoNuevo(NuevoEmpleado(sueldo: 500).IdEmpleado, monto: 10000, abono: 500);
+
+        Prestamos.Crear(prestamo);
+
+        Assert.Equal(500m, prestamo.AbonoSemanal);
+    }
+
+    [Fact]
     public void Prestamo_SoloAEmpleadosActivos()
     {
         var baja = NuevoEmpleado(estatus: EstatusEmpleado.BajaTemporal);

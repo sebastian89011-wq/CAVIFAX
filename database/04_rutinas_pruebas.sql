@@ -95,6 +95,7 @@ CREATE PROCEDURE sp_registrar_prestamo(
 BEGIN
     DECLARE v_activos INT DEFAULT 0;
     DECLARE v_estatus_emp VARCHAR(20);
+    DECLARE v_sueldo_diario DECIMAL(10,2);
 
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
@@ -103,7 +104,8 @@ BEGIN
     END;
 
     START TRANSACTION;
-        SELECT estatus INTO v_estatus_emp FROM EMPLEADO WHERE id_empleado = p_id_empleado;
+        SELECT estatus, sueldo_diario INTO v_estatus_emp, v_sueldo_diario
+        FROM EMPLEADO WHERE id_empleado = p_id_empleado;
         IF v_estatus_emp IS NULL OR v_estatus_emp <> 'activo' THEN
             SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: El empleado no existe o no está activo.';
         END IF;
@@ -115,8 +117,18 @@ BEGIN
             SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error RN-14: El empleado ya cuenta con un préstamo o anticipo activo.';
         END IF;
 
+        -- Un anticipo se descuenta completo en la siguiente nómina: el abono es todo el monto
+        IF p_tipo = 'anticipo' THEN
+            SET p_abono_semanal = p_monto;
+        END IF;
+
         IF p_abono_semanal > p_monto OR p_monto <= 0 OR p_abono_semanal <= 0 THEN
             SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: Montos de préstamo o abono semanal inválidos.';
+        END IF;
+
+        -- Si pasara de una semana de sueldo (lunes a sábado), el bruto nunca alcanzaría para el abono
+        IF p_tipo = 'anticipo' AND p_monto > v_sueldo_diario * 6 THEN
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: Un anticipo no puede ser mayor a una semana de sueldo del empleado.';
         END IF;
 
         INSERT INTO PRESTAMO (id_empleado, tipo, monto, fecha, abono_semanal, saldo_pendiente, estatus)
@@ -238,8 +250,12 @@ WHERE N.estatus = 'autorizada'
 -- Caso Válido 1: Consultar función de saldo disponible en Obra 1 (120,000 - 1,755 = 118,245)
 SELECT fn_saldo_disponible_obra(1) AS saldo_obra_1;
 
--- Caso Válido 2: Registrar préstamo a empleado sin adeudos (Miguel Torres, id 4)
-CALL sp_registrar_prestamo(4, 'anticipo', 1000.00, 500.00, '2026-11-16');
+-- Caso Válido 2: Registrar anticipo a empleado sin adeudos (Miguel Torres, id 4).
+-- Al ser anticipo, el abono queda igual al monto aunque se mande otro valor.
+CALL sp_registrar_prestamo(4, 'anticipo', 1000.00, 1000.00, '2026-11-16');
+
+-- Caso Inválido (Dispara error en SP): anticipo mayor a una semana de sueldo (Pedro Sánchez, id 6: 360 x 6 = 2,160)
+-- CALL sp_registrar_prestamo(6, 'anticipo', 3000.00, 3000.00, '2026-11-16');
 
 -- Caso Inválido 1 (Dispara error en SP): Intentar segundo préstamo activo a Juan Pérez (id 3)
 -- CALL sp_registrar_prestamo(3, 'prestamo', 2000.00, 500.00, '2026-11-16');

@@ -173,15 +173,14 @@ public static class DatosPrueba
         new Prestamo { IdPrestamo = 1, IdEmpleado = 1, Tipo = TipoPrestamo.Prestamo, Monto = 2000m, Fecha = new DateOnly(2026, 10, 30),
                        AbonoSemanal = 200m, SaldoPendiente = 1600m, Estatus = EstatusPrestamo.Activo },
         new Prestamo { IdPrestamo = 2, IdEmpleado = 3, Tipo = TipoPrestamo.Anticipo, Monto = 600m, Fecha = new DateOnly(2026, 10, 30),
-                       AbonoSemanal = 300m, SaldoPendiente = 0m, Estatus = EstatusPrestamo.Liquidado }
+                       AbonoSemanal = 600m, SaldoPendiente = 0m, Estatus = EstatusPrestamo.Liquidado }
     };
 
     public static List<AbonoPrestamo> AbonosPrestamo = new()
     {
         new AbonoPrestamo { IdAbono = 1, IdPrestamo = 1, IdNomina = 1, MontoAbonado = 200m, Fecha = new DateOnly(2026, 11, 8) },
         new AbonoPrestamo { IdAbono = 2, IdPrestamo = 1, IdNomina = 2, MontoAbonado = 200m, Fecha = new DateOnly(2026, 11, 15) },
-        new AbonoPrestamo { IdAbono = 3, IdPrestamo = 2, IdNomina = 1, MontoAbonado = 300m, Fecha = new DateOnly(2026, 11, 8) },
-        new AbonoPrestamo { IdAbono = 4, IdPrestamo = 2, IdNomina = 2, MontoAbonado = 300m, Fecha = new DateOnly(2026, 11, 15) }
+        new AbonoPrestamo { IdAbono = 3, IdPrestamo = 2, IdNomina = 1, MontoAbonado = 600m, Fecha = new DateOnly(2026, 11, 8) }
     };
 
     // ---------- Ayudas para mostrar nombres en lugar de ids ----------

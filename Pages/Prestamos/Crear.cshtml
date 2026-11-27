@@ -24,12 +24,14 @@
             <label asp-for="Prestamo.Monto" class="form-label">Monto ($)</label>
             <input asp-for="Prestamo.Monto" type="number" step="0.01" min="0.01" class="form-control" required />
             <div class="form-text">Cantidad que se le entrega hoy al trabajador.</div>
+            <div id="ayuda-anticipo" class="form-text">
+                Se descuenta completo en la siguiente nómina. No puede pasar de una semana de sueldo del empleado.
+            </div>
         </div>
-        <div class="col-md-4 mb-3">
+        <div id="campo-abono" class="col-md-4 mb-3">
             <label asp-for="Prestamo.AbonoSemanal" class="form-label">Abono semanal ($)</label>
             <input asp-for="Prestamo.AbonoSemanal" type="number" step="0.01" min="0.01" class="form-control" required />
-            <div class="form-text">Se descuenta en cada nómina.</div>
-            <div class="form-text">Cuánto se le descuenta en cada nómina semanal. En un anticipo normalmente es igual al monto.</div>
+            <div class="form-text">Cuánto se le descuenta en cada nómina semanal.</div>
         </div>
         <div class="col-md-4 mb-3">
             <label asp-for="Prestamo.Fecha" class="form-label">Fecha de entrega</label>
@@ -40,3 +42,26 @@
     <button type="submit" class="btn btn-primary">Guardar</button>
     <a asp-page="Index" class="btn btn-secondary">Cancelar</a>
 </form>
+
+@section Scripts {
+    <script>
+        // En un anticipo solo se captura el monto: el abono es el monto completo
+        // (PrestamoService lo vuelve a fijar al guardar)
+        (() => {
+            const tipo = document.getElementById('Prestamo_Tipo');
+            const campoAbono = document.getElementById('campo-abono');
+            const abono = document.getElementById('Prestamo_AbonoSemanal');
+            const ayuda = document.getElementById('ayuda-anticipo');
+            const anticipo = '@((int)TipoPrestamo.Anticipo)';
+
+            const actualizar = () => {
+                const esAnticipo = tipo.value === anticipo;
+                campoAbono.hidden = esAnticipo;
+                abono.disabled = esAnticipo;   // un campo deshabilitado no se envía ni se valida
+                ayuda.hidden = !esAnticipo;
+            };
+            tipo.addEventListener('change', actualizar);
+            actualizar();
+        })();
+    </script>
+}

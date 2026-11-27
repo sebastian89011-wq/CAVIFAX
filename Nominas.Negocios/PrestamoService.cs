@@ -62,6 +62,10 @@ public class PrestamoService
         prestamo.SaldoPendiente = prestamo.Monto;
         prestamo.Estatus = EstatusPrestamo.Activo;
 
+        // Un anticipo se descuenta completo en la siguiente nómina: el abono es todo el monto
+        if (prestamo.Tipo == TipoPrestamo.Anticipo)
+            prestamo.AbonoSemanal = prestamo.Monto;
+
         this.ValidarDatos(prestamo);
         _db.Prestamos.Add(prestamo);
         _db.SaveChanges();
@@ -98,5 +102,17 @@ public class PrestamoService
             throw new ValidacionException("El abono semanal debe ser mayor a 0.");
         if (prestamo.AbonoSemanal > prestamo.Monto)
             throw new ValidacionException("El abono semanal no puede ser mayor al monto.");
+
+        // Si el anticipo pasara de una semana de sueldo, el bruto nunca alcanzaría para el abono
+        // y se diferiría cada semana sin cobrarse
+        if (prestamo.Tipo == TipoPrestamo.Anticipo && prestamo.Monto > SueldoSemanal(empleado))
+            throw new ValidacionException(
+                $"Un anticipo no puede ser mayor a una semana de sueldo del empleado ({SueldoSemanal(empleado):C}).");
+    }
+
+    // Sueldo base de lunes a sábado, sin horas extra
+    public static decimal SueldoSemanal(Empleado empleado)
+    {
+        return empleado.SueldoDiario * 6;
     }
 }
