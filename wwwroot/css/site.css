@@ -188,6 +188,104 @@ main form > h5 {
   font-size: 0.85rem;
 }
 
+/* ---------- Manual de usuario (Pages/Ayuda) ---------- */
+/* Las variables --accent, --line-soft, etc. vienen de glass.css; así el manual
+   también se ve bien en modo oscuro. El valor después de la coma es el de respaldo. */
+
+/* Índice de la izquierda: se queda fijo al bajar (solo en pantallas grandes).
+   top: 7rem lo deja debajo del menú, que también se queda fijo arriba. */
+@media (min-width: 992px) {
+  .manual-indice {
+    position: sticky;
+    top: 7rem;
+  }
+}
+.manual-indice ol {
+  padding-left: 1.2rem;
+  line-height: 1.9;
+}
+
+/* Al saltar a una sección, deja espacio arriba para que el menú fijo no tape el título */
+.manual section {
+  scroll-margin-top: 7rem;
+  margin-bottom: 3rem;
+}
+.manual h2 {
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--line-soft, var(--cavi-gris-claro));
+  margin-bottom: 1rem;
+}
+.manual h5 {
+  margin-top: 1.5rem;
+}
+
+/* Capturas de pantalla */
+.manual-captura {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 1rem 0 1.25rem;
+  border: 1px solid var(--line-soft, var(--cavi-gris-claro));
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(1, 0, 102, 0.12);
+}
+
+/* Diagramas de pasos: cajitas unidas con flechas */
+.manual-pasos {
+  display: flex;
+  flex-wrap: wrap;           /* en celular se acomodan en varias filas */
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+.manual-paso {
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--line, var(--cavi-gris));
+  border-radius: 10px;
+  background: var(--surface-base, #fff);
+  font-weight: 600;
+}
+.manual-paso span {         /* el número del paso */
+  display: inline-block;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-right: 0.3rem;
+  border-radius: 50%;
+  background: var(--accent, var(--cavi-azul));
+  color: #fff;
+  text-align: center;
+  line-height: 1.5rem;
+  font-size: 0.8rem;
+}
+.manual-paso-final {        /* el paso más importante, resaltado */
+  border: 2px solid var(--accent, var(--cavi-azul));
+  background: var(--tint-accent, rgba(1, 0, 102, 0.08));
+}
+.manual-paso-listo {        /* estado final: Pagada */
+  border: 2px solid var(--success, #198754);
+  background: var(--tint-success, rgba(25, 135, 84, 0.12));
+}
+.manual-flecha {
+  color: var(--text-muted, var(--cavi-gris-oscuro));
+  font-size: 1.2rem;
+}
+
+/* Preguntas frecuentes que se abren y se cierran */
+.manual-pregunta {
+  border: 1px solid var(--line-soft, var(--cavi-gris-claro));
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  background: var(--surface-base, #fff);
+}
+.manual-pregunta summary {
+  font-weight: 600;
+  cursor: pointer;
+}
+.manual-pregunta p {
+  margin: 0.5rem 0 0;
+}
+
 /* ---------- Plantilla original de ASP.NET (no tocar) ---------- */
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
   color: var(--bs-secondary-color);

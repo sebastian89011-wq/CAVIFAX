@@ -1,0 +1,338 @@
+@page
+@model Nominas.Web.Pages.Ayuda.IndexModel
+@{
+    ViewData["Title"] = "Manual de usuario";
+}
+
+@*
+    MANUAL DE USUARIO
+    - La columna de la izquierda es el índice: cada enlace lleva a una sección por su id (href="#nomina" → id="nomina").
+    - Las capturas están en wwwroot/img/manual. Para cambiar una, reemplaza el archivo .png con el mismo nombre.
+    - Los estilos propios de esta página están en wwwroot/css/site.css, sección "Manual de usuario".
+*@
+
+<h1>Manual de usuario</h1>
+<p class="text-muted">Todo lo que necesitas para usar CAVIFAX, paso a paso.</p>
+
+<div class="row">
+
+    @* 1. Índice: se queda fijo al bajar en pantallas grandes *@
+    <div class="col-lg-3 mb-4">
+        <nav class="card manual-indice">
+            <div class="card-body">
+                <div class="fw-bold mb-2">Contenido</div>
+                <ol class="mb-0">
+                    <li><a href="#que-es">¿Qué es CAVIFAX?</a></li>
+                    <li><a href="#entrar">Entrar al sistema</a></li>
+                    <li><a href="#inicio">La pantalla de Inicio</a></li>
+                    <li><a href="#orden">Por dónde empezar</a></li>
+                    <li><a href="#puestos">Puestos y clientes</a></li>
+                    <li><a href="#empleados">Empleados</a></li>
+                    <li><a href="#obras">Obras</a></li>
+                    <li><a href="#asistencias">Asistencias</a></li>
+                    <li><a href="#prestamos">Préstamos y anticipos</a></li>
+                    <li><a href="#nomina">Nómina semanal</a></li>
+                    <li><a href="#errores">Mensajes de error</a></li>
+                    <li><a href="#preguntas">Preguntas frecuentes</a></li>
+                </ol>
+            </div>
+        </nav>
+    </div>
+
+    @* 2. Contenido del manual *@
+    <div class="col-lg-9 manual">
+
+        @* ---------- ¿Qué es? ---------- *@
+        <section id="que-es">
+            <h2>¿Qué es CAVIFAX?</h2>
+            <p>
+                CAVIFAX es el sistema para llevar las nóminas de la constructora: quién trabajó, en qué obra,
+                cuánto se le paga y cuánto le queda de presupuesto a cada obra.
+            </p>
+            <p>Con CAVIFAX puedes:</p>
+            <ul>
+                <li>Registrar empleados, obras, clientes y puestos.</li>
+                <li>Capturar cada día en qué obra trabajó cada empleado, o si faltó.</li>
+                <li>Calcular la nómina de la semana automáticamente.</li>
+                <li>Prestar dinero o dar anticipos y descontarlos poco a poco de la nómina.</li>
+                <li>Saber qué pagos ya se entregaron y cuáles faltan.</li>
+                <li>Recibir un aviso cuando a una obra se le está acabando el presupuesto.</li>
+            </ul>
+        </section>
+
+        @* ---------- Entrar ---------- *@
+        <section id="entrar">
+            <h2>Entrar al sistema</h2>
+            <h5>Iniciar sesión</h5>
+            <ol>
+                <li>Abre el navegador en la dirección del sistema, por ejemplo <code>http://localhost:5249</code>.</li>
+                <li>Escribe tu <strong>usuario</strong> y tu <strong>contraseña</strong>.</li>
+                <li>Si usas tu propia computadora, puedes marcar <strong>Mantener la sesión iniciada</strong>.</li>
+                <li>Presiona <strong>Entrar</strong>.</li>
+            </ol>
+            <img src="~/img/manual/01-login.png" alt="Pantalla de inicio de sesión" class="manual-captura" />
+            <p>Si aparece <em>Usuario o contraseña incorrectos</em>, revisa que no tengas activadas las mayúsculas.</p>
+
+            <h5>Cambiar tu contraseña</h5>
+            <ol>
+                <li>Arriba a la derecha, haz clic en tu nombre.</li>
+                <li>Elige <strong>Cambiar contraseña</strong>.</li>
+                <li>Escribe tu contraseña actual, la nueva y otra vez la nueva para confirmarla.</li>
+                <li>Presiona <strong>Guardar</strong>.</li>
+            </ol>
+            <img src="~/img/manual/16-cambiar-contrasena.png" alt="Pantalla para cambiar la contraseña" class="manual-captura" />
+            <p>La contraseña nueva debe tener <strong>al menos 8 caracteres</strong> y ser distinta de la actual.</p>
+
+            <h5>Salir</h5>
+            <p>Haz clic en tu nombre y elige <strong>Cerrar sesión</strong>. Hazlo siempre que uses una computadora compartida.</p>
+        </section>
+
+        @* ---------- Inicio ---------- *@
+        <section id="inicio">
+            <h2>La pantalla de Inicio</h2>
+            <p>Te muestra de un vistazo lo que necesita tu atención.</p>
+            <img src="~/img/manual/02-inicio.png" alt="Pantalla de Inicio" class="manual-captura" />
+            <ul>
+                <li><strong>Aviso amarillo, Nómina sin autorizar:</strong> hay una semana en borrador. El botón <strong>Revisar</strong> te lleva a ella.</li>
+                <li><strong>Aviso rojo, Saldo bajo:</strong> una o más obras ya gastaron casi todo su presupuesto.</li>
+                <li><strong>Tarjetas:</strong> empleados activos, obras activas, pagos por entregar y préstamos activos. Haz clic en una para ir a su sección.</li>
+                <li><strong>Presupuesto de obras activas:</strong> cuánto se ha gastado y cuánto le queda a cada obra.</li>
+                <li><strong>Accesos rápidos:</strong> atajos a las tareas más comunes.</li>
+            </ul>
+        </section>
+
+        @* ---------- Orden ---------- *@
+        <section id="orden">
+            <h2>Por dónde empezar</h2>
+            <p>Si es la primera vez que usas el sistema, sigue este orden. Cada paso necesita el anterior.</p>
+            <div class="manual-pasos">
+                <div class="manual-paso"><span>1</span> Puestos</div>
+                <div class="manual-flecha">→</div>
+                <div class="manual-paso"><span>2</span> Clientes</div>
+                <div class="manual-flecha">→</div>
+                <div class="manual-paso"><span>3</span> Empleados</div>
+                <div class="manual-flecha">→</div>
+                <div class="manual-paso"><span>4</span> Obras</div>
+                <div class="manual-flecha">→</div>
+                <div class="manual-paso"><span>5</span> Asistencias</div>
+                <div class="manual-flecha">→</div>
+                <div class="manual-paso manual-paso-final"><span>6</span> Nómina</div>
+            </div>
+            <p class="text-muted">Un empleado necesita un puesto, y una obra necesita un cliente.</p>
+        </section>
+
+        @* ---------- Puestos y clientes ---------- *@
+        <section id="puestos">
+            <h2>Puestos y clientes</h2>
+            <h5>Puestos</h5>
+            <ol>
+                <li>En el menú, entra a <strong>Puestos</strong> y presiona <strong>+ Nuevo puesto</strong>.</li>
+                <li>Escribe el nombre del puesto (por ejemplo, <em>Albañil</em>) y, si quieres, una descripción.</li>
+                <li>Presiona <strong>Guardar</strong>.</li>
+            </ol>
+            <h5>Clientes</h5>
+            <ol>
+                <li>Entra a <strong>Clientes</strong> y presiona <strong>+ Nuevo cliente</strong>.</li>
+                <li>Escribe el nombre y el domicilio del cliente.</li>
+                <li>Presiona <strong>Guardar</strong>.</li>
+            </ol>
+            <p class="text-muted">Un puesto solo se puede eliminar si ningún empleado lo tiene, y un cliente si no tiene obras.</p>
+        </section>
+
+        @* ---------- Empleados ---------- *@
+        <section id="empleados">
+            <h2>Empleados</h2>
+            <h5>Dar de alta un empleado</h5>
+            <ol>
+                <li>Entra a <strong>Empleados</strong> y presiona <strong>+ Nuevo empleado</strong>.</li>
+                <li><strong>Datos personales:</strong> nombre, apellidos, teléfono (10 dígitos) y domicilio.</li>
+                <li><strong>Documentos:</strong> CURP (18 caracteres), NSS (11 dígitos) y clave de elector (18 caracteres). Marca la casilla si ya entregó todos sus documentos.</li>
+                <li><strong>Datos laborales:</strong> puesto, especialidad, tipo de contratación, fecha de ingreso, sueldo diario y pago por hora extra.</li>
+                <li>Presiona <strong>Guardar</strong>.</li>
+            </ol>
+            <img src="~/img/manual/04-empleado-nuevo.png" alt="Formulario de nuevo empleado" class="manual-captura" />
+
+            <h5>Buscar, ver y editar</h5>
+            <p>
+                En la lista escribe un nombre, CURP o NSS en el buscador, o filtra por estatus.
+                Haz clic en el nombre del empleado para ver toda su información, o en <strong>Editar</strong> para cambiarla.
+            </p>
+            <img src="~/img/manual/03-empleados.png" alt="Lista de empleados con buscador" class="manual-captura" />
+
+            <div class="alert alert-warning">
+                <strong>Los empleados no se borran.</strong> Para darlo de baja, entra a <strong>Editar</strong> y cambia su estatus
+                a <em>Baja temporal</em> o <em>Baja definitiva</em>. Así ya no aparece en la captura de asistencias.
+            </div>
+        </section>
+
+        @* ---------- Obras ---------- *@
+        <section id="obras">
+            <h2>Obras</h2>
+            <ol>
+                <li>Entra a <strong>Obras</strong> y presiona <strong>+ Nueva obra</strong>.</li>
+                <li>Escribe el nombre, elige el cliente y escribe la ubicación.</li>
+                <li>Elige al ingeniero responsable y al supervisor (deben ser empleados activos).</li>
+                <li>Escribe la fecha de inicio y la fecha de fin programada.</li>
+                <li>
+                    Llena el presupuesto de mano de obra:
+                    <ul>
+                        <li><strong>Presupuesto:</strong> el dinero total para pagar trabajadores en esa obra.</li>
+                        <li><strong>Avisar cuando el saldo baje de:</strong> a partir de esta cantidad aparece el aviso de <em>Saldo bajo</em>.</li>
+                        <li><strong>Bono por trabajador al terminar:</strong> un extra para cada trabajador cuando la obra termina (puede ser 0).</li>
+                    </ul>
+                </li>
+                <li>Presiona <strong>Guardar</strong>.</li>
+            </ol>
+            <p>Si haces clic en el nombre de una obra, ves cuánto se ha gastado, cuánto queda y cuánto costó cada semana.</p>
+            <img src="~/img/manual/07-obra-detalle.png" alt="Detalle de una obra con su presupuesto" class="manual-captura" />
+            <p class="text-muted">Para marcar una obra como <em>Terminada</em>, edítala y escribe la fecha de fin real.</p>
+        </section>
+
+        @* ---------- Asistencias ---------- *@
+        <section id="asistencias">
+            <h2>Asistencias</h2>
+            <p>Aquí anotas, día por día, dónde trabajó cada empleado. Es lo que el sistema usa para calcular la nómina.</p>
+            <ol>
+                <li>Entra a <strong>Asistencias</strong>. Verás la semana actual, de lunes a sábado.</li>
+                <li>Para cambiar de semana usa <strong>« Anterior</strong> o <strong>Siguiente »</strong>, o elige una fecha y presiona <strong>Ir</strong>.</li>
+                <li>En cada casilla elige la <strong>obra</strong> donde trabajó, o deja <strong>Falta</strong>. Si hizo horas extra, escríbelas en <strong>h extra</strong>.</li>
+                <li>Al terminar, presiona <strong>Guardar asistencias</strong>.</li>
+            </ol>
+            <img src="~/img/manual/09-asistencias.png" alt="Captura de asistencias de una semana" class="manual-captura" />
+            <p class="text-muted">Las horas extra solo cuentan si el empleado asistió ese día.</p>
+        </section>
+
+        @* ---------- Préstamos ---------- *@
+        <section id="prestamos">
+            <h2>Préstamos y anticipos</h2>
+            <ol>
+                <li>Entra a <strong>Préstamos</strong> y presiona <strong>+ Nuevo préstamo</strong>.</li>
+                <li>Elige al empleado y el tipo: <em>Préstamo</em> o <em>Anticipo</em>.</li>
+                <li>Escribe el monto y el <strong>abono semanal</strong> (lo que se le descontará cada semana).</li>
+                <li>Escribe la fecha de entrega y presiona <strong>Guardar</strong>.</li>
+            </ol>
+            <img src="~/img/manual/11-prestamo-nuevo.png" alt="Formulario de nuevo préstamo" class="manual-captura" />
+            <p>Cada vez que se autoriza una nómina, el abono se descuenta solo, hasta que el préstamo queda <em>Liquidado</em>.</p>
+            <ul>
+                <li>Un empleado solo puede tener <strong>un préstamo o anticipo activo</strong> a la vez.</li>
+                <li>Solo se presta a empleados <strong>activos</strong>.</li>
+                <li>Un préstamo solo se puede cancelar si todavía no tiene abonos.</li>
+            </ul>
+        </section>
+
+        @* ---------- Nómina ---------- *@
+        <section id="nomina">
+            <h2>Nómina semanal</h2>
+            <p>La nómina se puede corregir hasta que la autorizas:</p>
+            <div class="manual-pasos">
+                <div class="manual-paso"><span>1</span> Asistencias</div>
+                <div class="manual-flecha">→</div>
+                <div class="manual-paso"><span>2</span> Borrador</div>
+                <div class="manual-flecha">→</div>
+                <div class="manual-paso manual-paso-final"><span>3</span> Autorizar</div>
+                <div class="manual-flecha">→</div>
+                <div class="manual-paso"><span>4</span> Entregar</div>
+                <div class="manual-flecha">→</div>
+                <div class="manual-paso manual-paso-listo">Pagada</div>
+            </div>
+
+            <h5>Paso 1. Generar el borrador</h5>
+            <ol>
+                <li>Revisa que las asistencias de la semana estén completas.</li>
+                <li>Entra a <strong>Nómina</strong>, elige un día de la semana a pagar y presiona <strong>Generar borrador</strong>.</li>
+                <li>El sistema calcula días trabajados, horas extra, bonos, descuentos de préstamos y el pago neto de cada empleado.</li>
+            </ol>
+            <img src="~/img/manual/12-nomina.png" alt="Pantalla de Nómina semanal con la lista de semanas" class="manual-captura" />
+
+            <h5>Paso 2. Revisar y corregir</h5>
+            <p>Abre la semana para ver el costo por obra y el pago de cada empleado.</p>
+            <ul>
+                <li>Si corregiste asistencias, presiona <strong>Recalcular con las asistencias actuales</strong>.</li>
+                <li>Si te equivocaste de semana, presiona <strong>Eliminar borrador</strong>.</li>
+            </ul>
+            <img src="~/img/manual/13-nomina-borrador.png" alt="Nómina en borrador" class="manual-captura" />
+
+            <h5>Paso 3. Autorizar</h5>
+            <ol>
+                <li>Al final de la página, escribe el <strong>efectivo recibido del cliente</strong>.</li>
+                <li>Presiona <strong>Autorizar nómina</strong> y confirma.</li>
+            </ol>
+            <div class="alert alert-danger">
+                <strong>Cuidado:</strong> una nómina autorizada <strong>ya no se puede modificar</strong>.
+                Al autorizar se descuentan los abonos de los préstamos y el gasto se resta del presupuesto de las obras.
+            </div>
+
+            <h5>Paso 4. Entregar los pagos</h5>
+            <p>
+                Conforme entregues el dinero, presiona <strong>Marcar entregado</strong> en la fila de cada trabajador.
+                Si alguien no recogió su pago, aparece en la nómina siguiente como pendiente.
+                Cuando todos los pagos están entregados, la nómina pasa sola a <strong>Pagada</strong>.
+            </p>
+            <img src="~/img/manual/14-nomina-autorizada.png" alt="Nómina autorizada con los pagos entregados" class="manual-captura" />
+        </section>
+
+        @* ---------- Errores ---------- *@
+        <section id="errores">
+            <h2>Mensajes de error</h2>
+            <p>Si algo no se puede guardar, el sistema muestra un mensaje en rojo. Nada se guarda hasta que lo corrijas.</p>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead class="table-light">
+                        <tr><th>Mensaje</th><th>Qué hacer</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Usuario o contraseña incorrectos.</td><td>Revisa mayúsculas y vuelve a escribirlos.</td></tr>
+                        <tr><td>El teléfono debe tener 10 dígitos.</td><td>Escríbelo sin espacios ni guiones.</td></tr>
+                        <tr><td>La CURP debe tener 18 caracteres.</td><td>Cópiala tal como viene en el documento.</td></tr>
+                        <tr><td>El NSS debe tener 11 dígitos.</td><td>Revísalo en la hoja del IMSS.</td></tr>
+                        <tr><td>Ya existe un empleado con esa CURP / ese NSS.</td><td>Búscalo en Empleados en lugar de darlo de alta otra vez.</td></tr>
+                        <tr><td>La fecha de fin programada no puede ser anterior a la de inicio.</td><td>Corrige las fechas de la obra.</td></tr>
+                        <tr><td>El límite de alerta debe estar entre 0 y el presupuesto.</td><td>Pon una cantidad menor al presupuesto.</td></tr>
+                        <tr><td>Para marcar la obra como terminada, captura la fecha de fin real.</td><td>Escribe la fecha en que terminó.</td></tr>
+                        <tr><td>El empleado ya tiene un préstamo o anticipo activo.</td><td>Espera a que liquide el actual.</td></tr>
+                        <tr><td>No se puede cancelar: el préstamo ya tiene abonos.</td><td>Deja que se siga descontando.</td></tr>
+                        <tr><td>No se puede eliminar: el cliente tiene obras registradas.</td><td>Déjalo registrado.</td></tr>
+                        <tr><td>Solo se puede recalcular una nómina en borrador.</td><td>Las nóminas autorizadas ya no cambian.</td></tr>
+                        <tr><td>No se puede entregar un pago de una nómina sin autorizar.</td><td>Autoriza primero la nómina.</td></tr>
+                        <tr><td>La contraseña nueva debe tener al menos 8 caracteres.</td><td>Usa 8 caracteres o más.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        @* ---------- Preguntas ---------- *@
+        <section id="preguntas">
+            <h2>Preguntas frecuentes</h2>
+            @* <details> se abre y se cierra al hacer clic, sin necesidad de JavaScript *@
+            <details class="manual-pregunta">
+                <summary>¿Puedo borrar a un empleado?</summary>
+                <p>No. Para no perder su historial de pagos, solo se cambia su estatus a <em>Baja temporal</em> o <em>Baja definitiva</em>.</p>
+            </details>
+            <details class="manual-pregunta">
+                <summary>Me equivoqué en una asistencia y ya generé la nómina.</summary>
+                <p>Si la nómina sigue en borrador, corrige la asistencia y presiona <strong>Recalcular con las asistencias actuales</strong>. Si ya está autorizada, ya no se puede cambiar.</p>
+            </details>
+            <details class="manual-pregunta">
+                <summary>¿Por qué el presupuesto de la obra no bajó?</summary>
+                <p>El gasto se resta solo cuando la nómina se <strong>autoriza</strong>. Un borrador es solo una vista previa.</p>
+            </details>
+            <details class="manual-pregunta">
+                <summary>Un trabajador no vino por su pago. ¿Se pierde?</summary>
+                <p>No. Queda pendiente y aparece en la nómina de la semana siguiente hasta que lo marques como entregado.</p>
+            </details>
+            <details class="manual-pregunta">
+                <summary>¿Qué pasa si a un empleado no le alcanza para su abono?</summary>
+                <p>Ese abono no se cobra esa semana y se pasa a la siguiente.</p>
+            </details>
+            <details class="manual-pregunta">
+                <summary>No aparece un empleado en Asistencias.</summary>
+                <p>Solo aparecen los empleados <em>Activos</em>. Revisa su estatus en Empleados.</p>
+            </details>
+            <details class="manual-pregunta">
+                <summary>Olvidé mi contraseña.</summary>
+                <p>Pídele al encargado del sistema que te la restablezca.</p>
+            </details>
+        </section>
+
+    </div>
+</div>

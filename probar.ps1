@@ -182,7 +182,8 @@ if (-not $SinHumo) {
                     '/Empleados', '/Empleados/Crear', '/Empleados?Buscar=a',
                     '/Obras', '/Obras/Crear', '/Obras?Estatus=0',
                     '/Asistencias', '/NominaSemanal', '/Prestamos', '/Prestamos/Crear',
-                    '/Cuenta/CambiarContrasena', '/css/site.css', '/css/glass.css'
+                    '/Cuenta/CambiarContrasena', '/Ayuda', '/img/manual/02-inicio.png',
+                    '/css/site.css', '/css/glass.css'
                 )
 
                 # Páginas de detalle y edición: se toma el primer registro que aparezca en cada lista
