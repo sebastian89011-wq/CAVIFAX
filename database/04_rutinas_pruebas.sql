@@ -44,6 +44,23 @@ BEGIN
     END IF;
 END//
 
+-- Al entregar el último pago pendiente de una nómina autorizada, la nómina pasa a 'pagada'
+-- (pregunta 9). Es la misma regla que NominaService.MarcarPagoEntregado, pero aquí se cumple
+-- aunque el pago se marque desde Workbench u otro programa.
+CREATE TRIGGER trg_nomina_pagada_after_update_pago
+AFTER UPDATE ON PAGO_EMPLEADO
+FOR EACH ROW
+BEGIN
+    IF NEW.estatus = 'entregado' AND OLD.estatus <> 'entregado' THEN
+        UPDATE NOMINA N
+        SET N.estatus = 'pagada'
+        WHERE N.id_nomina = NEW.id_nomina
+          AND N.estatus = 'autorizada'
+          AND NOT EXISTS (SELECT 1 FROM PAGO_EMPLEADO P
+                          WHERE P.id_nomina = NEW.id_nomina AND P.estatus = 'pendiente');
+    END IF;
+END//
+
 -- FUNCIÓN ALMACENADA (PUNTO 20)
 
 CREATE FUNCTION fn_saldo_disponible_obra(p_id_obra INT) 
@@ -207,6 +224,14 @@ BEGIN
 END//
 
 DELIMITER ;
+
+-- Pone en 'pagada' las nóminas autorizadas que ya no tienen pagos pendientes
+-- (por ejemplo, si sus pagos se entregaron antes de existir el trigger anterior)
+UPDATE NOMINA N
+SET N.estatus = 'pagada'
+WHERE N.estatus = 'autorizada'
+  AND NOT EXISTS (SELECT 1 FROM PAGO_EMPLEADO P
+                  WHERE P.id_nomina = N.id_nomina AND P.estatus = 'pendiente');
 
 -- PUNTO 21: DEMOSTRACIÓN DE CASOS VÁLIDOS Y NO VÁLIDOS EN RUTINAS
 
