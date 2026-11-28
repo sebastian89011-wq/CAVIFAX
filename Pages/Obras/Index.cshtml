@@ -62,7 +62,8 @@
                 _ => "bg-secondary"
             };
 
-            <tr>
+            @* El color del renglón depende del estatus (Pages/Shared/ColorEstado.cs) *@
+            <tr class="@ColorEstado.Fila(o.Estatus)">
                 <td><a asp-page="Detalle" asp-route-id="@o.IdObra">@o.Nombre</a></td>
                 <td>@Model.NombreCliente(o.IdCliente)</td>
                 <td><span class="badge @claseEstatus">@o.Estatus</span></td>

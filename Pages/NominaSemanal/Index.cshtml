@@ -46,7 +46,8 @@
             };
             var pendientes = Model.PagosPendientes(n.IdNomina);
 
-            <tr>
+            @* El color del renglón depende del estatus (Pages/Shared/ColorEstado.cs) *@
+            <tr class="@ColorEstado.Fila(n.Estatus)">
                 <td><a asp-page="Detalle" asp-route-id="@n.IdNomina">@Model.Semana(n)</a></td>
                 <td><span class="badge @claseEstatus">@n.Estatus</span></td>
                 <td>@(n.FechaAutorizacion?.ToString("dd/MM/yyyy HH:mm") ?? "—")</td>

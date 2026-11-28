@@ -188,6 +188,42 @@ main form > h5 {
   font-size: 0.85rem;
 }
 
+/* ---------- Renglones por estado (Pages/Shared/ColorEstado.cs) ---------- */
+/* Cada renglón lleva una franja de color a la izquierda y un fondo muy suave
+   del mismo tono. Los tonos son los de las etiquetas de estado (glass.css):
+   --success, --warning, --danger, --accent (azul CAVI) y --line (gris).
+   El fondo es más claro que la etiqueta para que la etiqueta siga resaltando. */
+.fila-exito   { --fila-color: var(--success, #198754); --fila-fondo: color-mix(in srgb, var(--fila-color) 9%, transparent); }
+.fila-aviso   { --fila-color: var(--warning, #ffc107); --fila-fondo: color-mix(in srgb, var(--fila-color) 15%, transparent); }
+.fila-peligro { --fila-color: var(--danger, #dc3545);  --fila-fondo: color-mix(in srgb, var(--fila-color) 9%, transparent); }
+.fila-marca   { --fila-color: var(--accent, #010066);  --fila-fondo: color-mix(in srgb, var(--fila-color) 8%, transparent); }
+.fila-neutra  { --fila-color: var(--line, #999999);    --fila-fondo: color-mix(in srgb, var(--fila-color) 14%, transparent); }
+
+/* En modo oscuro el fondo azul se come los tonos suaves: se suben un poco */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .fila-exito   { --fila-fondo: color-mix(in srgb, var(--fila-color) 20%, transparent); }
+  :root:not([data-theme="light"]) .fila-aviso   { --fila-fondo: color-mix(in srgb, var(--fila-color) 18%, transparent); }
+  :root:not([data-theme="light"]) .fila-peligro { --fila-fondo: color-mix(in srgb, var(--fila-color) 20%, transparent); }
+  :root:not([data-theme="light"]) .fila-marca   { --fila-fondo: color-mix(in srgb, var(--fila-color) 16%, transparent); }
+  /* el gris casi sin fondo, para que no se confunda con el azul de "marca" */
+  :root:not([data-theme="light"]) .fila-neutra  { --fila-fondo: color-mix(in srgb, var(--fila-color) 5%, transparent); }
+}
+
+/* Bootstrap pinta cada celda con "box-shadow"; aquí cambiamos ese color por el del
+   estado (también en las tablas rayadas). Al pasar el mouse se sigue resaltando. */
+.table > tbody > tr[class*="fila-"] > * {
+  --bs-table-bg-type: var(--fila-fondo);
+}
+/* La franja: solo en la primera celda del renglón */
+.table > tbody > tr[class*="fila-"] > :first-child {
+  box-shadow: inset 4px 0 0 var(--fila-color),
+              inset 0 0 0 9999px var(--bs-table-bg-state, var(--bs-table-bg-type));
+}
+/* Lo que ya terminó se ve más apagado para que no distraiga */
+.table > tbody > tr.fila-neutra > * {
+  --bs-table-color-type: var(--text-muted, #666666);
+}
+
 /* ---------- Manual de usuario (Pages/Ayuda) ---------- */
 /* Las variables --accent, --line-soft, etc. vienen de glass.css; así el manual
    también se ve bien en modo oscuro. El valor después de la coma es el de respaldo. */

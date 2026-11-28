@@ -122,7 +122,7 @@
                 <tbody>
                     @foreach (var c in Model.CostosPorNomina)
                     {
-                        <tr>
+                        <tr class="@ColorEstado.Fila(c.Nomina.Estatus)">
                             <td><a asp-page="/NominaSemanal/Detalle" asp-route-id="@c.Nomina.IdNomina">@Model.Semana(c.Nomina)</a></td>
                             <td>@c.Nomina.Estatus</td>
                             <td class="text-end">@c.Trabajadores</td>

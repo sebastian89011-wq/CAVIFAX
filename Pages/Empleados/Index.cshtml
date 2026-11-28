@@ -51,7 +51,8 @@
         }
         @foreach (var e in Model.Empleados)
         {
-            <tr>
+            @* El color del renglón depende del estatus (Pages/Shared/ColorEstado.cs) *@
+            <tr class="@ColorEstado.Fila(e.Estatus)">
                 <td><a asp-page="Detalle" asp-route-id="@e.IdEmpleado">@e.Nombre @e.ApellidoPaterno @e.ApellidoMaterno</a></td>
                 <td>@Model.NombrePuesto(e.IdPuesto)</td>
                 <td>@e.Especialidad</td>
